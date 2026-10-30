@@ -1,0 +1,1 @@
+INSERT INTO workshifts (id, name, status, started_at, finished_at) VALUES ($1, $2, $3, $4, $5);

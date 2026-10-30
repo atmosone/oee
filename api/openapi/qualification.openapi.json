@@ -1,0 +1,423 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Qualification",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "events"
+    },
+    {
+      "name": "queries"
+    },
+    {
+      "name": "commands"
+    }
+  ],
+  "paths": {
+    "/events": {
+      "get": {
+        "summary": "Events",
+        "deprecated": false,
+        "description": "",
+        "operationId": "events",
+        "tags": [
+          "events"
+        ],
+        "parameters": [
+          {
+            "name": "equipment_id",
+            "in": "query",
+            "description": "Equipment id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/queries/equipment": {
+      "get": {
+        "summary": "Equipment",
+        "deprecated": false,
+        "description": "",
+        "operationId": "equipment",
+        "tags": [
+          "queries"
+        ],
+        "parameters": [
+          {
+            "name": "equipment_id",
+            "in": "query",
+            "description": "Equipment id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Equipment"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/queries/current_equipment_workshift": {
+      "get": {
+        "summary": "CurrentEquipmentWorkshift",
+        "deprecated": false,
+        "description": "",
+        "operationId": "current_equipment_workshift",
+        "tags": [
+          "queries"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentEquipmentWorkshift",
+                  "nullable": true
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/queries/current_equipment_downtime": {
+      "get": {
+        "summary": "CurrentEquipmentDowntime",
+        "deprecated": false,
+        "description": "",
+        "operationId": "current_equipment_downtime",
+        "tags": [
+          "queries"
+        ],
+        "parameters": [
+          {
+            "name": "equipment_id",
+            "in": "query",
+            "description": "Equipment id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentEquipmentDowntime",
+                  "nullable": true
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/queries/unqualified_downtimes_list": {
+      "get": {
+        "summary": "UnqualifiedDowtimesList",
+        "deprecated": false,
+        "description": "",
+        "operationId": "unqualified_downtimes_list",
+        "tags": [
+          "queries"
+        ],
+        "parameters": [
+          {
+            "name": "equipment_id",
+            "in": "query",
+            "description": "Equipment id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "workshift_id",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnqualifiedDowntimesList",
+                  "description": "Unqualified downtimes list"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/queries/equipment_specifications_list": {
+      "get": {
+        "summary": "EquipmentSpecificationsList",
+        "deprecated": false,
+        "description": "",
+        "operationId": "equipment_specifications_list",
+        "tags": [
+          "queries"
+        ],
+        "parameters": [
+          {
+            "name": "equipment_id",
+            "in": "query",
+            "description": "Equipment id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EquipmentSpecificationsList",
+                  "description": "Specifications list"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/commands/create_qualification": {
+      "post": {
+        "summary": "CreateQualification",
+        "deprecated": false,
+        "description": "",
+        "operationId": "create_qualification",
+        "tags": [
+          "commands"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateQualificationCommand",
+                "description": "Create qualification command"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": []
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Equipment": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Equipment name"
+          },
+          "line": {
+            "type": "string",
+            "description": "Equipment line name"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "description": "Current equipment state"
+      },
+      "CurrentEquipmentWorkshift": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Current equipment workshift id"
+          },
+          "name": {
+            "type": "string",
+            "description": "Current equipment workshift name"
+          },
+          "started_at": {
+            "type": "string",
+            "description": "Current equipment workshift start time"
+          }
+        },
+        "required": [
+          "id",
+          "started_at",
+          "name"
+        ],
+        "description": "Current equipment workshift"
+      },
+      "CurrentEquipmentDowntime": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Current equipment downtime id"
+          },
+          "started_at": {
+            "type": "string",
+            "description": "Current equipment downtime start time"
+          }
+        },
+        "required": [
+          "id",
+          "started_at"
+        ],
+        "description": "Current equipment downtime"
+      },
+      "EquipmentSpecificationsListItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Equipment specification id"
+          },
+          "code": {
+            "type": "string",
+            "description": "Equipment specification code"
+          },
+          "description": {
+            "type": "string",
+            "description": "Equipment specification description"
+          }
+        },
+        "required": [
+          "description",
+          "id",
+          "code"
+        ],
+        "description": "Equipment specifications list item"
+      },
+      "UnqualifiedDowntimesListItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unqualified downtime id"
+          },
+          "duration": {
+            "type": "string",
+            "description": "Unqualified downtime duration"
+          },
+          "started_at": {
+            "type": "string",
+            "description": "Unqualified downtime start time"
+          },
+          "finished_at": {
+            "type": "string",
+            "description": "Unqualified downtime finish time"
+          }
+        },
+        "required": [
+          "id",
+          "started_at",
+          "finished_at",
+          "duration"
+        ],
+        "description": "Unqualified downtime"
+      },
+      "UnqualifiedDowntimesList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/UnqualifiedDowntimesListItem",
+          "description": "Unqualified downtimes list item"
+        },
+        "description": "Unqualified downtimes list"
+      },
+      "EquipmentSpecificationsList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/EquipmentSpecificationsListItem",
+          "description": "Equipment specifications list item"
+        },
+        "description": "Equipment specifications list"
+      },
+      "CreateQualificationCommand": {
+        "type": "object",
+        "properties": {
+          "downtime_id": {
+            "type": "string",
+            "description": "Downtime id"
+          },
+          "specification_id": {
+            "type": "string",
+            "description": "Specification id"
+          },
+          "qualification_comment": {
+            "type": "string",
+            "description": "Qualification operator comment"
+          }
+        },
+        "required": [
+          "downtime_id",
+          "specification_id",
+          "qualification_comment"
+        ]
+      }
+    },
+    "responses": {},
+    "securitySchemes": {}
+  },
+  "servers": [],
+  "security": []
+}

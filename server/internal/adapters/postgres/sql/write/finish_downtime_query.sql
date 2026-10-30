@@ -1,0 +1,1 @@
+UPDATE downtimes SET status = $1, duration = $2, finished_at = $3 WHERE id = $4;

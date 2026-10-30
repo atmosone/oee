@@ -1,0 +1,1 @@
+SELECT id, equipment_id, status, duration, started_at, finished_at FROM downtimes WHERE id = $1;

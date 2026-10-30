@@ -1,0 +1,1 @@
+INSERT INTO qualifications (downtime_id, specification_id, comment) VALUES ($1, $2, $3);

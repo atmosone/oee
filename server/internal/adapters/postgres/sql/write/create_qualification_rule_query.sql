@@ -1,0 +1,1 @@
+INSERT INTO (equipment_id, specification_id) VALUES ($1; $2); 

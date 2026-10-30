@@ -1,0 +1,322 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Edge",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "commands"
+    },
+    {
+      "name": "events"
+    }
+  ],
+  "paths": {
+    "/commands/start_workshift": {
+      "post": {
+        "summary": "StartWorkshift",
+        "deprecated": false,
+        "description": "",
+        "operationId": "StartWorkshift",
+        "tags": [
+          "commands"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartWorkshiftCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/commands/start_downtime": {
+      "post": {
+        "summary": "StartDowntime",
+        "deprecated": false,
+        "description": "",
+        "operationId": "StartDowntime",
+        "tags": [
+          "commands"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartDowntimeCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/commands/finish_downtime": {
+      "post": {
+        "summary": "FinishDowntime",
+        "deprecated": false,
+        "description": "",
+        "operationId": "FinishDowntime",
+        "tags": [
+          "commands"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinishDowntimeCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/commands/finish_workshift": {
+      "post": {
+        "summary": "FinishWorkshift",
+        "deprecated": false,
+        "description": "",
+        "operationId": "FinishWorkshift",
+        "tags": [
+          "commands"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinishWorkshiftCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/events": {
+      "get": {
+        "summary": "Events",
+        "deprecated": false,
+        "description": "",
+        "operationId": "Events",
+        "tags": [
+          "events"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/DowntimeStartedEvent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DowntimeFinishedEvent"
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "StartWorkshiftCommand": {
+        "type": "object",
+        "properties": {
+          "workshift_id": {
+            "type": "string",
+            "description": "Workshift ID"
+          },
+          "workshift_name": {
+            "type": "string",
+            "description": "Workshift name"
+          },
+          "workshift_start_time": {
+            "type": "string",
+            "description": "Workshift start time"
+          }
+        },
+        "required": [
+          "workshift_id",
+          "workshift_name",
+          "workshift_start_time"
+        ],
+        "description": "Start workshift request"
+      },
+      "FinishWorkshiftCommand": {
+        "type": "object",
+        "properties": {
+          "workshift_id": {
+            "type": "string",
+            "description": "Workshift ID"
+          },
+          "workshift_finish_time": {
+            "type": "string",
+            "description": "Workshift finish time"
+          }
+        },
+        "required": [
+          "workshift_id",
+          "workshift_finish_time"
+        ],
+        "description": "Finish workshift request"
+      },
+      "StartDowntimeCommand": {
+        "type": "object",
+        "properties": {
+          "equipment_id": {
+            "type": "string",
+            "description": "Equipment ID"
+          },
+          "downtime_id": {
+            "type": "string",
+            "description": "Downtime ID"
+          },
+          "downtime_start_time": {
+            "type": "string",
+            "description": "Downtime start time"
+          }
+        },
+        "required": [
+          "downtime_id",
+          "downtime_start_time",
+          "equipment_id"
+        ],
+        "description": "Start downtime request"
+      },
+      "FinishDowntimeCommand": {
+        "type": "object",
+        "properties": {
+          "downtime_id": {
+            "type": "string",
+            "description": "Downtime ID"
+          },
+          "downtime_finish_time": {
+            "type": "string",
+            "description": "Downtime finish time"
+          }
+        },
+        "required": [
+          "downtime_id",
+          "downtime_finish_time"
+        ],
+        "description": "Finish downtime request"
+      },
+      "DowntimeStartedEvent": {
+        "type": "object",
+        "properties": {
+          "downtime_id": {
+            "type": "string",
+            "description": "Downtime ID"
+          },
+          "equipment_id": {
+            "type": "string",
+            "description": "Equipment ID"
+          },
+          "downtime_status": {
+            "type": "string",
+            "description": "Downtime status"
+          },
+          "downtime_started_at": {
+            "type": "string",
+            "description": "Downtime started at"
+          }
+        },
+        "required": [
+          "downtime_id",
+          "equipment_id",
+          "downtime_status",
+          "downtime_started_at"
+        ],
+        "description": "Downtime started event"
+      },
+      "DowntimeFinishedEvent": {
+        "type": "object",
+        "properties": {
+          "downtime_id": {
+            "type": "string",
+            "description": "Downtime ID"
+          },
+          "equipment_id": {
+            "type": "string",
+            "description": "Equipment ID"
+          },
+          "downtime_status": {
+            "type": "string",
+            "description": "Downtime status"
+          },
+          "downtime_duration": {
+            "type": "string",
+            "description": "Downtime duration"
+          },
+          "downtime_finished_at": {
+            "type": "string",
+            "description": "Downtime finished at"
+          }
+        },
+        "required": [
+          "downtime_id",
+          "equipment_id",
+          "downtime_status",
+          "downtime_duration",
+          "downtime_finished_at"
+        ],
+        "description": "Downtime finished event"
+      }
+    },
+    "responses": {},
+    "securitySchemes": {}
+  },
+  "servers": [],
+  "security": []
+}

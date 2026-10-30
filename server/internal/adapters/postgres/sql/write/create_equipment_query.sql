@@ -1,0 +1,1 @@
+INSERT INTO equipment (id, name, units) VALUES ($1, $2, $3);
