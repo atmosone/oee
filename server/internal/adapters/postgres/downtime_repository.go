@@ -12,8 +12,6 @@ import (
 )
 
 var (
-	//go:embed sql/read/pull_qualified_downtime_equipment_query.sql
-	pullQualifiedDowntimeEquipmentQuery string
 	//go:embed sql/read/downtime_query.sql
 	downtimeQuery string
 	//go:embed sql/write/start_downtime_query.sql

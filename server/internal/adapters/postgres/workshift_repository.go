@@ -12,8 +12,6 @@ import (
 )
 
 var (
-	//go:embed sql/read/pull_current_workshift_query.sql
-	pullCurrentWorkshiftQuery string
 	//go:embed sql/read/workshift_query.sql
 	workshiftQuery string
 	//go:embed sql/write/start_workshift_query.sql

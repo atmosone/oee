@@ -7,10 +7,7 @@ import (
 )
 
 const (
-	EventTypeEquipmentLineCreated  = cqrs.EventType("equipment_line_created")
-	EventTypeEquipmentLineExpanded = cqrs.EventType("equipment_line_expanded")
-	EventTypeSpecificationCreated  = cqrs.EventType("specification_created")
-
+	EventTypeSpecificationCreated     = cqrs.EventType("specification_created")
 	EventTypeDowntimeStarted          = cqrs.EventType("downtime_started")
 	EventTypeDowntimeFinished         = cqrs.EventType("downtime_finished")
 	EventTypeQualificationRuleCreated = cqrs.EventType("qualification_rule_created")

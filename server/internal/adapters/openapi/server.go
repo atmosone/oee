@@ -8,9 +8,9 @@ import (
 	"github.com/atmosone/cqrs"
 	"github.com/atmosone/oee/internal/adapters/openapi/edge"
 	"github.com/atmosone/oee/internal/adapters/openapi/qualification"
-	"github.com/atmosone/oee/internal/app/commands"
-	"github.com/atmosone/oee/internal/app/queries"
+	"github.com/atmosone/oee/internal/commands"
 	"github.com/atmosone/oee/internal/domain"
+	"github.com/atmosone/oee/internal/queries"
 	"github.com/atmosone/oee/web"
 )
 

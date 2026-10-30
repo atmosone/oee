@@ -7,8 +7,8 @@ import (
 
 	"github.com/atmosone/cqrs"
 	"github.com/atmosone/oee/internal/adapters/postgres"
-	"github.com/atmosone/oee/internal/app/commands"
-	"github.com/atmosone/oee/internal/app/queries"
+	"github.com/atmosone/oee/internal/commands"
+	"github.com/atmosone/oee/internal/queries"
 )
 
 func New(logger *slog.Logger, db *sql.DB) cqrs.App {

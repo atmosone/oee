@@ -11,10 +11,6 @@ import (
 
 var (
 	//go:embed sql/write/create_equipment_query.sql
-	pullLineEquipmentQuery string
-	//go:embed sql/read/pull_standalone_equipment_query.sql
-	pullStandaloneEquipmentQuery string
-	//go:embed sql/write/create_equipment_query.sql
 	createEquipmentQuery string
 )
 

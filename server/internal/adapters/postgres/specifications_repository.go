@@ -10,8 +10,6 @@ import (
 )
 
 var (
-	//go:embed sql/read/pull_equipment_downtime_specification_query.sql
-	pullEquipmentDowntimeSpecificationQuery string
 	//go:embed sql/write/create_specification_query.sql
 	createSpecificationQuery string
 )
