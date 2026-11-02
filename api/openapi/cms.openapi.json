@@ -11,6 +11,9 @@
     },
     {
       "name": "queries"
+    },
+    {
+      "name": "events"
     }
   ],
   "paths": {
@@ -19,7 +22,7 @@
         "summary": "CreateEquipment",
         "deprecated": false,
         "description": "",
-        "operationId": "create_equipement",
+        "operationId": "create_equipment",
         "tags": [
           "commands"
         ],
@@ -28,27 +31,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "equipment_id": {
-                    "$ref": "#/components/schemas/EquipmentID",
-                    "description": "Creation equipment ID"
-                  },
-                  "equipment_name": {
-                    "$ref": "#/components/schemas/EquipmentName",
-                    "description": "Creation equipment name"
-                  },
-                  "equipment_units": {
-                    "$ref": "#/components/schemas/EquipmentUnits",
-                    "description": "Creation equipment units"
-                  }
-                },
-                "required": [
-                  "equipment_id",
-                  "equipment_name",
-                  "equipment_units"
-                ],
-                "description": "Create equipment command"
+                "$ref": "#/components/schemas/CreateEquipmentCommand"
               },
               "examples": {}
             }
@@ -57,8 +40,7 @@
         },
         "responses": {
           "200": {
-            "description": "",
-            "headers": {}
+            "description": ""
           }
         },
         "security": []
@@ -78,64 +60,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "equipment_line_id": {
-                    "$ref": "#/components/schemas/LineID",
-                    "description": "Being created equipment line ID"
-                  },
-                  "equipment_line_name": {
-                    "$ref": "#/components/schemas/LineName",
-                    "description": "Being created equipment line name"
-                  }
-                },
-                "required": [
-                  "equipment_line_id",
-                  "equipment_line_name"
-                ]
-              },
-              "examples": {}
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": []
-      }
-    },
-    "/commands/expand_equipment_line": {
-      "post": {
-        "summary": "ExpandEquipmentLine",
-        "deprecated": false,
-        "description": "",
-        "operationId": "expand_equipment_line",
-        "tags": [
-          "commands"
-        ],
-        "parameters": [],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "equipment_line_id": {
-                    "description": "Being expanded equipment line ID",
-                    "$ref": "#/components/schemas/LineID"
-                  },
-                  "equipment_id": {
-                    "$ref": "#/components/schemas/EquipmentID",
-                    "description": "Being expanded by equipment ID"
-                  }
-                },
-                "required": [
-                  "equipment_line_id",
-                  "equipment_id"
-                ]
+                "$ref": "#/components/schemas/CreateEquipmentLineCommand"
               },
               "examples": {}
             }
@@ -164,26 +89,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "specification_id": {
-                    "$ref": "#/components/schemas/SpecificationID",
-                    "description": "Being created specification ID"
-                  },
-                  "specification_code": {
-                    "$ref": "#/components/schemas/SpecificationCode",
-                    "description": "Being created specification code"
-                  },
-                  "specification_description": {
-                    "$ref": "#/components/schemas/SpecificationDescription",
-                    "description": "Being created specification description"
-                  }
-                },
-                "required": [
-                  "specification_id",
-                  "specification_code",
-                  "specification_description"
-                ]
+                "$ref": "#/components/schemas/CreateSpecificationCommand"
               },
               "examples": {}
             }
@@ -212,26 +118,44 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "qualification_rule_id": {
-                    "$ref": "#/components/schemas/QualificationRuleID",
-                    "description": "Being created qualification rule ID"
-                  },
-                  "specification_id": {
-                    "$ref": "#/components/schemas/SpecificationID",
-                    "description": "Being created qualification rule specification ID"
-                  },
-                  "equipment_id": {
-                    "$ref": "#/components/schemas/EquipmentID",
-                    "description": "Being created qualification rule equipment ID"
-                  }
-                },
-                "required": [
-                  "qualification_rule_id",
-                  "specification_id",
-                  "equipment_id"
-                ]
+                "$ref": "#/components/schemas/CreateQualificationRuleCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/commands/expand_equipment_line": {
+      "post": {
+        "summary": "ExpandEquipmentLine",
+        "deprecated": false,
+        "description": "",
+        "operationId": "expand_equipment_line",
+        "tags": [
+          "commands"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpandEquipmentLineCommand"
               },
               "examples": {}
             }
@@ -262,22 +186,22 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/EquipmentList",
-                  "description": "Equipment list"
+                  "$ref": "#/components/schemas/EquipmentList"
                 }
               }
-            }
+            },
+            "headers": {}
           }
         },
         "security": []
       }
     },
-    "/queries/lines_list": {
+    "/queries/equipment_lines_list": {
       "get": {
-        "summary": "LinesList",
+        "summary": "EquipmentLinesList",
         "deprecated": false,
         "description": "",
-        "operationId": "lines_list",
+        "operationId": "equipment_lines_list",
         "tags": [
           "queries"
         ],
@@ -288,8 +212,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LinesList",
-                  "description": "Lines list"
+                  "$ref": "#/components/schemas/EquipmentLinesList"
                 }
               }
             }
@@ -314,11 +237,213 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SpecificationsList",
-                  "description": "Specifications list"
+                  "$ref": "#/components/schemas/SpecificationsList"
                 }
               }
             }
+          }
+        },
+        "security": []
+      }
+    },
+    "/queries/equipment_details": {
+      "get": {
+        "summary": "EquipmentDetails",
+        "deprecated": false,
+        "description": "",
+        "operationId": "equipment_details",
+        "tags": [
+          "queries"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Equipment id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EquipmentId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EquipmentDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/queries/equipment_line_details": {
+      "get": {
+        "summary": "EquipmentLineDetails",
+        "deprecated": false,
+        "description": "",
+        "operationId": "equipment_line_details",
+        "tags": [
+          "queries"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Equipment line id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EquipmentLineId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EquipmentLineDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/queries/specification_details": {
+      "get": {
+        "summary": "SpecificationDetails",
+        "deprecated": false,
+        "description": "",
+        "operationId": "specification_details",
+        "tags": [
+          "queries"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Specification id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/SpecificationId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpecificationDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/queries/attachable_specifications": {
+      "get": {
+        "summary": "AttachableSpecifications",
+        "deprecated": false,
+        "description": "",
+        "operationId": "attachable_specifications",
+        "tags": [
+          "queries"
+        ],
+        "parameters": [
+          {
+            "name": "to",
+            "in": "query",
+            "description": "Equipment id",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/EquipmentId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttachableSpecificationsList"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/queries/expandable_equipment": {
+      "get": {
+        "summary": "ExpandableEquipment",
+        "deprecated": false,
+        "description": "",
+        "operationId": "expandable_equipment",
+        "tags": [
+          "queries"
+        ],
+        "parameters": [
+          {
+            "name": "to",
+            "in": "query",
+            "description": "equipment line id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EquipmentLineId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpandableEquipmentList"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/events": {
+      "get": {
+        "summary": "Events",
+        "deprecated": false,
+        "description": "",
+        "operationId": "events",
+        "tags": [
+          "events"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
           }
         },
         "security": []
@@ -327,9 +452,427 @@
   },
   "components": {
     "schemas": {
-      "EquipmentID": {
+      "EquipmentListItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/EquipmentId",
+            "description": "Equipment id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/EquipmentName",
+            "description": "Equipment name"
+          },
+          "units": {
+            "$ref": "#/components/schemas/EquipmentUnits",
+            "description": "Equipment units"
+          },
+          "total_qualification_rules": {
+            "type": "integer",
+            "description": "Total equipment qualification rules"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "units",
+          "total_qualification_rules"
+        ],
+        "description": "Equipment list item"
+      },
+      "EquipmentList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/EquipmentListItem",
+          "description": "Equipment list items"
+        },
+        "description": "Equipment list"
+      },
+      "EquipmentDetails": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/EquipmentName",
+            "description": "Equipment name"
+          },
+          "units": {
+            "$ref": "#/components/schemas/EquipmentUnits",
+            "description": "Equipment units"
+          },
+          "line": {
+            "$ref": "#/components/schemas/EquipmentDetailsLine",
+            "nullable": true,
+            "description": "Equipment line"
+          },
+          "specifications_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EquipmentDetailsSpecification",
+              "description": "Equipment specifications items"
+            },
+            "description": "Equipment specifications"
+          }
+        },
+        "required": [
+          "name",
+          "units",
+          "specifications_list"
+        ]
+      },
+      "EquipmentDetailsLine": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/EquipmentLineId",
+            "description": "Equipment line id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/EquipmentLineName",
+            "description": "Equipment line name"
+          }
+        },
+        "description": "Equipment details line",
+        "required": [
+          "id",
+          "name"
+        ],
+        "nullable": true
+      },
+      "EquipmentDetailsSpecification": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/SpecificationId",
+            "description": " Specification id"
+          },
+          "code": {
+            "$ref": "#/components/schemas/SpecificationCode",
+            "description": "Specification code"
+          },
+          "description": {
+            "$ref": "#/components/schemas/SpecificationDescription",
+            "description": "Specification description"
+          }
+        },
+        "required": [
+          "id",
+          "description",
+          "code"
+        ],
+        "description": "Equipment details specification"
+      },
+      "AttachableSpecification": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/SpecificationId",
+            "description": "Specification id"
+          },
+          "description": {
+            "$ref": "#/components/schemas/SpecificationDescription",
+            "description": "Specification description"
+          },
+          "code": {
+            "$ref": "#/components/schemas/SpecificationCode",
+            "description": "Specification code"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "description"
+        ],
+        "description": "Attachable specification"
+      },
+      "AttachableSpecificationsList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/AttachableSpecification",
+          "description": "Attachable specifications list item"
+        },
+        "description": "Attachable specifications list"
+      },
+      "CreateQualificationRuleCommand": {
+        "type": "object",
+        "properties": {
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentId",
+            "description": "Qualification rule equipment id"
+          },
+          "specification_id": {
+            "$ref": "#/components/schemas/SpecificationId",
+            "description": "Qualification rule specification id"
+          }
+        },
+        "description": "Create qualification rule",
+        "required": [
+          "equipment_id",
+          "specification_id"
+        ]
+      },
+      "CreateEquipmentCommand": {
+        "type": "object",
+        "properties": {
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentId",
+            "description": "Equipment id"
+          },
+          "equipment_name": {
+            "$ref": "#/components/schemas/EquipmentName",
+            "description": "Equipment name"
+          },
+          "equipment_units": {
+            "$ref": "#/components/schemas/EquipmentUnits",
+            "description": "Equipment units"
+          }
+        },
+        "description": "Create equipment command",
+        "required": [
+          "equipment_id",
+          "equipment_name",
+          "equipment_units"
+        ]
+      },
+      "SpecificationsListItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/SpecificationId",
+            "description": "Specification id"
+          },
+          "code": {
+            "$ref": "#/components/schemas/SpecificationCode",
+            "description": "Specification code"
+          },
+          "description": {
+            "$ref": "#/components/schemas/SpecificationDescription",
+            "description": "Specification description"
+          },
+          "total_qualification_rules": {
+            "type": "integer",
+            "description": "Specification total qualification rules"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "description",
+          "total_qualification_rules"
+        ],
+        "description": "Specifications list item"
+      },
+      "SpecificationsList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/SpecificationsListItem",
+          "description": "Specifications list items"
+        },
+        "description": "Specifications list"
+      },
+      "SpecificationDetailsEquipment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/EquipmentId",
+            "description": "Equipment id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/EquipmentName",
+            "description": "Equipment name"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "description": "Specification details equipment"
+      },
+      "SpecificationDetails": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/SpecificationCode",
+            "description": "Specification code"
+          },
+          "description": {
+            "$ref": "#/components/schemas/SpecificationDescription",
+            "description": "Specification description"
+          },
+          "equipment_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpecificationDetailsEquipment",
+              "description": "Specification equipment list items"
+            },
+            "description": "Specification equipment list"
+          }
+        },
+        "required": [
+          "code",
+          "description",
+          "equipment_list"
+        ],
+        "description": "Specification details"
+      },
+      "CreateSpecificationCommand": {
+        "type": "object",
+        "properties": {
+          "specification_id": {
+            "$ref": "#/components/schemas/SpecificationId",
+            "description": "Specification id"
+          },
+          "specification_code": {
+            "$ref": "#/components/schemas/SpecificationCode",
+            "description": "Specification code"
+          },
+          "specification_description": {
+            "$ref": "#/components/schemas/SpecificationDescription",
+            "description": "Specification description"
+          }
+        },
+        "required": [
+          "specification_id",
+          "specification_code",
+          "specification_description"
+        ],
+        "description": "Create specification command"
+      },
+      "EquipmentLinesListItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/EquipmentLineId",
+            "description": "Equipment line id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/EquipmentLineName",
+            "description": "Equipment line name"
+          },
+          "total_equipment": {
+            "type": "integer",
+            "description": "Total equipment in line"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "total_equipment"
+        ],
+        "description": "Equipment lines list item"
+      },
+      "EquipmentLinesList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/EquipmentLinesListItem",
+          "description": "Equipment lines list items"
+        },
+        "description": "Equipment lines list"
+      },
+      "EquipmentLineDetailsEquipment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/EquipmentId",
+            "description": "Equipment id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/EquipmentName",
+            "description": "Equipment name"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "description": "Equipment line details equipment"
+      },
+      "EquipmentLineDetails": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/EquipmentLineName",
+            "description": "Equipment line name"
+          },
+          "equipment_list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EquipmentLineDetailsEquipment",
+              "description": "Equipment line details equipment list items"
+            },
+            "description": "Equipment line equipment list"
+          }
+        },
+        "required": [
+          "name",
+          "equipment_list"
+        ],
+        "description": "Equipment line details"
+      },
+      "ExpandableEquipment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/EquipmentId",
+            "description": "Equipment id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/EquipmentName",
+            "description": "Equipment name"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "description": "Expandable equipment"
+      },
+      "ExpandableEquipmentList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ExpandableEquipment",
+          "description": "Expandable equipment list item"
+        },
+        "description": "Expandable equipment list"
+      },
+      "ExpandEquipmentLineCommand": {
+        "type": "object",
+        "properties": {
+          "equipment_line_id": {
+            "$ref": "#/components/schemas/EquipmentLineId",
+            "description": "Equipment line id to expand"
+          },
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentId",
+            "description": "Equipment id to expand"
+          }
+        },
+        "description": "Expand equipment line command",
+        "required": [
+          "equipment_line_id",
+          "equipment_id"
+        ]
+      },
+      "CreateEquipmentLineCommand": {
+        "type": "object",
+        "properties": {
+          "equipment_line_id": {
+            "$ref": "#/components/schemas/EquipmentLineId",
+            "description": "Equipment line id"
+          },
+          "equipment_line_name": {
+            "$ref": "#/components/schemas/EquipmentLineName",
+            "description": "Equipment line name"
+          }
+        },
+        "required": [
+          "equipment_line_id",
+          "equipment_line_name"
+        ],
+        "description": "Create equipment line command"
+      },
+      "EquipmentId": {
         "type": "string",
-        "description": "Equipment ID"
+        "description": "Equipment id"
       },
       "EquipmentName": {
         "type": "string",
@@ -339,78 +882,17 @@
         "type": "string",
         "description": "Equipment units"
       },
-      "EquipmentListItem": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "$ref": "#/components/schemas/EquipmentID",
-            "description": "Equipment ID"
-          },
-          "name": {
-            "$ref": "#/components/schemas/EquipmentName",
-            "description": "Equipment name"
-          },
-          "specifications": {
-            "$ref": "#/components/schemas/SpecificationsList"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "specifications"
-        ],
-        "description": "Equipment list item"
-      },
-      "EquipmentList": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/EquipmentListItem",
-          "description": "Equipment list item"
-        },
-        "description": "Equipment list"
-      },
-      "LineID": {
+      "EquipmentLineId": {
         "type": "string",
-        "description": "Line ID"
+        "description": "Line id"
       },
-      "LineName": {
+      "EquipmentLineName": {
         "type": "string",
         "description": "Line name"
       },
-      "LinesListItem": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "$ref": "#/components/schemas/LineID",
-            "description": "Line ID"
-          },
-          "name": {
-            "$ref": "#/components/schemas/LineName",
-            "description": "Line name"
-          },
-          "equipment": {
-            "description": "Line equipment list",
-            "$ref": "#/components/schemas/EquipmentListItem"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "equipment"
-        ],
-        "description": "Lines list item"
-      },
-      "LinesList": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/LinesListItem",
-          "description": "Lines list item"
-        },
-        "description": "Lines list"
-      },
-      "SpecificationID": {
+      "SpecificationId": {
         "type": "string",
-        "description": "Specification ID"
+        "description": "Specification id"
       },
       "SpecificationCode": {
         "type": "string",
@@ -419,41 +901,6 @@
       "SpecificationDescription": {
         "type": "string",
         "description": "Specification description"
-      },
-      "SpecificationsListItem": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Specification ID"
-          },
-          "code": {
-            "type": "string",
-            "description": "Specification code"
-          },
-          "description": {
-            "type": "string",
-            "description": "Specification description"
-          }
-        },
-        "required": [
-          "id",
-          "description",
-          "code"
-        ],
-        "description": "Specifications list item"
-      },
-      "SpecificationsList": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/SpecificationsListItem",
-          "description": "Specifications list item"
-        },
-        "description": "Specifications list"
-      },
-      "QualificationRuleID": {
-        "type": "string",
-        "description": "Qualification rule ID"
       }
     },
     "responses": {},

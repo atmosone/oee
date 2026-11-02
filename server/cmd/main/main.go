@@ -12,6 +12,7 @@ import (
 	"github.com/atmosone/oee/internal/adapters/openapi"
 	"github.com/atmosone/oee/internal/adapters/postgres"
 	"github.com/atmosone/oee/internal/app"
+	"github.com/atmosone/oee/internal/apps/cms"
 )
 
 func main() {
@@ -43,8 +44,10 @@ func main() {
 	app := app.New(logger, db)
 
 	var wg sync.WaitGroup
-	edge := openapi.NewEdgeServer(":8880", app)
+	cms := cms.Install(app, db)
+	edge := openapi.NewEdgeServer(":8881", app)
 	qualification := openapi.NewQualificationServer(":8882", app)
+	wg.Go(func() { cms.ListenAndServe() })
 	wg.Go(func() { edge.ListenAndServe() })
 	wg.Go(func() { qualification.ListenAndServe() })
 	<-ctx.Done()
@@ -53,6 +56,11 @@ func main() {
 		context.Background(), 5*time.Second,
 	)
 	defer shutdownCancel()
+	if err := cms.Shutdown(shutdownCtx); err != nil {
+		logger.With(slog.Any("error", err)).
+			Error("failed to shutdown cms server")
+		return
+	}
 	if err := edge.Shutdown(shutdownCtx); err != nil {
 		logger.With(slog.Any("error", err)).
 			Error("failed to shutdown edge server")
