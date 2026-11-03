@@ -21,10 +21,9 @@ func (s *ExpandableEquipmentStore) ExpandableEquipment(ctx context.Context, para
 		WHERE NOT EXISTS (
     		SELECT 1 
     		FROM equipment_line_items eli 
-    		WHERE eli.equipment_line_id = $1 
-      		AND eli.equipment_id = e.id
+    		WHERE eli.equipment_id = e.id 
 		);`,
-		params.To)
+	)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
