@@ -12,6 +12,18 @@ import (
 	"github.com/oapi-codegen/runtime"
 )
 
+// AssetsCounter Assets counter
+type AssetsCounter struct {
+	// TotalEquipment Total equipment assets
+	TotalEquipment int `json:"total_equipment"`
+
+	// TotalEquipmentLines Total equipment lines
+	TotalEquipmentLines int `json:"total_equipment_lines"`
+
+	// TotalSpecifications Total specifications
+	TotalSpecifications int `json:"total_specifications"`
+}
+
 // AttachableSpecification Attachable specification
 type AttachableSpecification struct {
 	// Code Specification code
@@ -305,6 +317,9 @@ type ServerInterface interface {
 	// Events
 	// (GET /events)
 	Events(w http.ResponseWriter, r *http.Request)
+	// AssetsCounter
+	// (GET /queries/assets_counter)
+	AssetsCounter(w http.ResponseWriter, r *http.Request)
 	// AttachableSpecifications
 	// (GET /queries/attachable_specifications)
 	AttachableSpecifications(w http.ResponseWriter, r *http.Request, params AttachableSpecificationsParams)
@@ -421,6 +436,21 @@ func (siw *ServerInterfaceWrapper) Events(w http.ResponseWriter, r *http.Request
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.Events(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// AssetsCounter operation middleware
+func (siw *ServerInterfaceWrapper) AssetsCounter(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AssetsCounter(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -763,6 +793,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("POST "+options.BaseURL+"/commands/create_specification", wrapper.CreateSpecification)
 	m.HandleFunc("POST "+options.BaseURL+"/commands/expand_equipment_line", wrapper.ExpandEquipmentLine)
 	m.HandleFunc("GET "+options.BaseURL+"/events", wrapper.Events)
+	m.HandleFunc("GET "+options.BaseURL+"/queries/assets_counter", wrapper.AssetsCounter)
 	m.HandleFunc("GET "+options.BaseURL+"/queries/attachable_specifications", wrapper.AttachableSpecifications)
 	m.HandleFunc("GET "+options.BaseURL+"/queries/equipment_details", wrapper.EquipmentDetails)
 	m.HandleFunc("GET "+options.BaseURL+"/queries/equipment_line_details", wrapper.EquipmentLineDetails)

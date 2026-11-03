@@ -65,6 +65,10 @@ func Install(app cqrs.App, db *sql.DB) *http.Server {
 		queries.ExpandableEquipment(
 			postgres.NewExpandableEquipmentStore(db)))
 
+	app.OnQuery(queries.QueryTypeAssetsCounter,
+		queries.AssetsCounter(
+			postgres.NewAssetsCounterStore(db)))
+
 	mux := http.NewServeMux()
 	return &http.Server{
 		Addr: ":8880",

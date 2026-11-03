@@ -415,6 +415,31 @@
         "security": []
       }
     },
+    "/queries/assets_counter": {
+      "get": {
+        "summary": "AssetsCounter",
+        "deprecated": false,
+        "description": "",
+        "operationId": "assets_counter",
+        "tags": [
+          "queries"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetsCounter"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
     "/events": {
       "get": {
         "summary": "Events",
@@ -862,6 +887,29 @@
           "equipment_line_name"
         ],
         "description": "Create equipment line command"
+      },
+      "AssetsCounter": {
+        "type": "object",
+        "properties": {
+          "total_equipment": {
+            "type": "integer",
+            "description": "Total equipment assets"
+          },
+          "total_equipment_lines": {
+            "type": "integer",
+            "description": "Total equipment lines"
+          },
+          "total_specifications": {
+            "type": "integer",
+            "description": "Total specifications"
+          }
+        },
+        "required": [
+          "total_equipment",
+          "total_equipment_lines",
+          "total_specifications"
+        ],
+        "description": "Assets counter"
       },
       "EquipmentId": {
         "type": "string",

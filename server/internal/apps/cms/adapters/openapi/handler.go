@@ -18,6 +18,11 @@ type App interface {
 
 type Handler struct{ app App }
 
+// AssetsCounter implements [schema.ServerInterface].
+func (h *Handler) AssetsCounter(w http.ResponseWriter, r *http.Request) {
+	handleQuery(r, w, h.app, queries.AssetsCounterQuery{})
+}
+
 // ExpandEquipmentLine implements [schema.ServerInterface].
 func (h *Handler) ExpandEquipmentLine(w http.ResponseWriter, r *http.Request) {
 	handleCommand[commands.ExpandEquipmentLineCommand](r, w, h.app)
