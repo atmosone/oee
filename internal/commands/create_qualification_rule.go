@@ -9,11 +9,11 @@ import (
 	"github.com/atmosone/oee/internal/domain/specifications"
 )
 
-const CommandTypeCreateQualificationRule = cqrs.CommandType("cmd.qualification.create_rule")
+const CommandTypeCreateQualificationRule = cqrs.CommandType("create_qualification_rule")
 
 type CreateQualificationRuleCommand struct {
-	EquipmentID     equipment.ID
-	SpecificationID specifications.ID
+	EquipmentID     equipment.ID      `json:"equipment_id"`
+	SpecificationID specifications.ID `json:"specification_id"`
 }
 
 func (c CreateQualificationRuleCommand) Type() cqrs.CommandType {

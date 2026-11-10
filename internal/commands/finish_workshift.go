@@ -8,11 +8,11 @@ import (
 	"github.com/atmosone/oee/internal/domain/workshifts"
 )
 
-const CommandTypeFinishWorkshift = cqrs.CommandType("cmd.workshifts.finish")
+const CommandTypeFinishWorkshift = cqrs.CommandType("finish_workshift")
 
 type FinishWorkshiftCommand struct {
-	ID                  workshifts.ID
-	FinishWorkshiftedAt time.Time
+	ID         workshifts.ID `json:"id"`
+	FinishedAt time.Time     `json:"finished_at"`
 }
 
 func (c FinishWorkshiftCommand) Type() cqrs.CommandType {
@@ -31,7 +31,7 @@ func FinishWorkshift(repository FinishWorkshiftRepositoryPort) cqrs.CommandHandl
 		if err != nil {
 			return nil, err
 		}
-		if err := workshift.Finish(cmd.FinishWorkshiftedAt); err != nil {
+		if err := workshift.Finish(cmd.FinishedAt); err != nil {
 			return nil, err
 		}
 		if err := repository.Save(ctx, workshift); err != nil {

@@ -8,11 +8,11 @@ import (
 	"github.com/atmosone/oee/internal/domain/lines"
 )
 
-const CommandTypeRemoveEquipmentFromLine = cqrs.CommandType("cmd.lines.remove_equipment")
+const CommandTypeRemoveEquipmentFromLine = cqrs.CommandType("remove_equipment_from_line")
 
 type RemoveEquipmentFromLineCommand struct {
-	ID          lines.ID
-	EquipmentID equipment.ID
+	ID          lines.ID     `json:"id"`
+	EquipmentID equipment.ID `json:"equipment_id"`
 }
 
 func (c RemoveEquipmentFromLineCommand) Type() cqrs.CommandType {

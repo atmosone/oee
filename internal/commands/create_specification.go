@@ -7,12 +7,12 @@ import (
 	"github.com/atmosone/oee/internal/domain/specifications"
 )
 
-const CommandTypeCreateSpecification = cqrs.CommandType("cmd.specifications.create")
+const CommandTypeCreateSpecification = cqrs.CommandType("create_specification")
 
 type CreateSpecificationCommand struct {
-	ID          specifications.ID
-	Code        specifications.Code
-	Description specifications.Description
+	ID          specifications.ID          `json:"id"`
+	Code        specifications.Code        `json:"code"`
+	Description specifications.Description `json:"description"`
 }
 
 func (c CreateSpecificationCommand) Type() cqrs.CommandType {

@@ -7,10 +7,10 @@ import (
 	"github.com/atmosone/oee/internal/domain/specifications"
 )
 
-const CommandTypeDeprecateSpecification = cqrs.CommandType("cmd.specifications.deprecate")
+const CommandTypeDeprecateSpecification = cqrs.CommandType("deprecate_specification")
 
 type DeprecateSpecificationCommand struct {
-	ID specifications.ID
+	ID specifications.ID `json:"id"`
 }
 
 func (c DeprecateSpecificationCommand) Type() cqrs.CommandType {

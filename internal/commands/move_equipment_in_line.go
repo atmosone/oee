@@ -8,12 +8,12 @@ import (
 	"github.com/atmosone/oee/internal/domain/lines"
 )
 
-const CommandTypeMoveEquipmentInLine = cqrs.CommandType("cmd.lines.move_equipment")
+const CommandTypeMoveEquipmentInLine = cqrs.CommandType("move_equipment_in_line")
 
 type MoveEquipmentInLineCommand struct {
-	ID          lines.ID
-	EquipmentID equipment.ID
-	Direction   lines.Direction
+	ID          lines.ID        `json:"id"`
+	EquipmentID equipment.ID    `json:"equipment_id"`
+	Direction   lines.Direction `json:"direction"`
 }
 
 func (c MoveEquipmentInLineCommand) Type() cqrs.CommandType {

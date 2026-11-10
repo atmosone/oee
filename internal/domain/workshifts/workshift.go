@@ -9,6 +9,7 @@ import (
 )
 
 var (
+	ErrWorkshiftNotFound   = errors.New("workshifts: workshift not found")
 	ErrActiveAlreadyExists = errors.New("workshifts: active already exists")
 	ErrAlreadyFinished     = errors.New("workshifts: already finished")
 	ErrInvalidStartTime    = errors.New("workshifts: invalid start time")

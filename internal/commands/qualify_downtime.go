@@ -9,12 +9,12 @@ import (
 	"github.com/atmosone/oee/internal/domain/specifications"
 )
 
-const CommandTypeQualifyDowntime = cqrs.CommandType("cmd.qualification.qualify_downtime")
+const CommandTypeQualifyDowntime = cqrs.CommandType("qualify_downtime")
 
 type QualifyDowntimeCommand struct {
-	DowntimeID      downtimes.ID
-	SpecificationID specifications.ID
-	Comment         qualification.Comment
+	DowntimeID      downtimes.ID          `json:"downtime_id"`
+	SpecificationID specifications.ID     `json:"specification_id"`
+	Comment         qualification.Comment `json:"comment"`
 }
 
 func (c QualifyDowntimeCommand) Type() cqrs.CommandType {

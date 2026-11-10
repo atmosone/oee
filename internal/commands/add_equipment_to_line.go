@@ -8,11 +8,11 @@ import (
 	"github.com/atmosone/oee/internal/domain/lines"
 )
 
-const CommandTypeAddEquipmentToLine = cqrs.CommandType("cmd.lines.add_equipment")
+const CommandTypeAddEquipmentToLine = cqrs.CommandType("add_equipment_to_line")
 
 type AddEquipmentToLineCommand struct {
-	ID          lines.ID
-	EquipmentID equipment.ID
+	ID          lines.ID     `json:"id"`
+	EquipmentID equipment.ID `json:"equipment_id"`
 }
 
 func (c AddEquipmentToLineCommand) Type() cqrs.CommandType {

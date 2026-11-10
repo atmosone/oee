@@ -7,12 +7,12 @@ import (
 	"github.com/atmosone/oee/internal/domain/equipment"
 )
 
-const CommandTypeCreateEquipment = cqrs.CommandType("cmd.equipment.create")
+const CommandTypeCreateEquipment = cqrs.CommandType("create_equipment")
 
 type CreateEquipmentCommand struct {
-	ID       equipment.ID
-	Name     equipment.Name
-	Category equipment.Category
+	ID       equipment.ID       `json:"id"`
+	Name     equipment.Name     `json:"name"`
+	Category equipment.Category `json:"category"`
 }
 
 func (c CreateEquipmentCommand) Type() cqrs.CommandType {

@@ -79,8 +79,7 @@ func (ds *DowntimeSaver) Save(ctx context.Context, downtime *downtimes.Downtime)
 		switch e := event.(type) {
 		case downtimes.StartedEvent:
 			if _, err := tx.ExecContext(ctx,
-				`INSERT INTO downtimes (id, equipment_id, status, started_at, finished_at, duration) 
-				VALUES ($1, $2, $3, $4, $5, $6);`,
+				`INSERT INTO downtimes (id, equipment_id, status, started_at, finished_at, duration) VALUES ($1, $2, $3, $4, $5, $6);`,
 				e.ID, e.EquipmentID, e.Status, e.StartedAt, downtime.FinishedAt, downtime.Duration,
 			); err != nil {
 				return fmt.Errorf("%s: %w", op, err)

@@ -7,6 +7,7 @@ import (
 	"github.com/atmosone/cqrs"
 )
 
+var ErrSpecificationNotFound = errors.New("specifications: specification not found")
 var ErrAlreadyDeprecated = errors.New("specifications: already deprecated")
 
 type ID string

@@ -9,12 +9,12 @@ import (
 	"github.com/atmosone/oee/internal/domain/equipment"
 )
 
-const CommandTypeStartDowntime = cqrs.CommandType("cmd.start_downtime")
+const CommandTypeStartDowntime = cqrs.CommandType("start_downtime")
 
 type StartDowntimeCommand struct {
-	ID          downtimes.ID
-	EquipmentID equipment.ID
-	StartedAt   time.Time
+	ID          downtimes.ID `json:"id"`
+	EquipmentID equipment.ID `json:"equipment_id"`
+	StartedAt   time.Time    `json:"started_at"`
 }
 
 func (c StartDowntimeCommand) Type() cqrs.CommandType {

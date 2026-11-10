@@ -9,11 +9,11 @@ import (
 	"github.com/atmosone/oee/internal/domain/specifications"
 )
 
-const CommandTypeRemoveQualificationRule = cqrs.CommandType("cmd.qualification.remove_rule")
+const CommandTypeRemoveQualificationRule = cqrs.CommandType("remove_qualification_rule")
 
 type RemoveQualificationRuleCommand struct {
-	EquipmentID     equipment.ID
-	SpecificationID specifications.ID
+	EquipmentID     equipment.ID      `json:"equipment_id"`
+	SpecificationID specifications.ID `json:"specification_id"`
 }
 
 func (c RemoveQualificationRuleCommand) Type() cqrs.CommandType {

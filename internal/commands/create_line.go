@@ -7,11 +7,11 @@ import (
 	"github.com/atmosone/oee/internal/domain/lines"
 )
 
-const CommandTypeCreateLine = cqrs.CommandType("cmd.lines.create")
+const CommandTypeCreateLine = cqrs.CommandType("create_line")
 
 type CreateLineCommand struct {
-	ID   lines.ID
-	Name lines.Name
+	ID   lines.ID   `json:"id"`
+	Name lines.Name `json:"name"`
 }
 
 func (c CreateLineCommand) Type() cqrs.CommandType {

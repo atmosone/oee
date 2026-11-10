@@ -8,12 +8,12 @@ import (
 	"github.com/atmosone/oee/internal/domain/workshifts"
 )
 
-const CommandTypeStartWorkshift = cqrs.CommandType("cmd.workshifts.start")
+const CommandTypeStartWorkshift = cqrs.CommandType("start_workshift")
 
 type StartWorkshiftCommand struct {
-	ID                 workshifts.ID
-	Name               workshifts.Name
-	StartWorkshiftedAt time.Time
+	ID        workshifts.ID   `json:"id"`
+	Name      workshifts.Name `json:"name"`
+	StartedAt time.Time       `json:"started_at"`
 }
 
 func (c StartWorkshiftCommand) Type() cqrs.CommandType {
@@ -32,7 +32,7 @@ func StartWorkshift(repository StartWorkshiftRepositoryPort) cqrs.CommandHandler
 			repository,
 			cmd.ID,
 			cmd.Name,
-			cmd.StartWorkshiftedAt,
+			cmd.StartedAt,
 		)
 		if err != nil {
 			return nil, err

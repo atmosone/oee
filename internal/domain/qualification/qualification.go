@@ -11,6 +11,8 @@ import (
 )
 
 var (
+	ErrSpecificationNotFound      = errors.New("qualification: specification not found")
+	ErrDowntimeNotFound           = errors.New("qualifications: downtime not found")
 	ErrEquipmentConflict          = errors.New("qualification: equipment conflict")
 	ErrForbiddenSpecification     = errors.New("qualification: forbidden specification")
 	ErrSpecificationNotExists     = errors.New("qualification: specification not exits")
