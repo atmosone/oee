@@ -1,1 +1,0 @@
-SELECT equipment_id FROM equipment_line_items WHERE equipment_line_id = $1;

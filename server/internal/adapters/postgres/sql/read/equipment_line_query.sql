@@ -1,1 +1,0 @@
-SELECT id, name FROM equipment_lines WHERE id = $1;

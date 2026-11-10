@@ -1,1 +1,0 @@
-INSERT INTO specifications (id, code, description) VALUES ($1, $2, $3);

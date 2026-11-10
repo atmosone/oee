@@ -1,1 +1,0 @@
-INSERT INTO equipment_line_items (equipment_line_id, equipment_id) VALUES ($1, $2);

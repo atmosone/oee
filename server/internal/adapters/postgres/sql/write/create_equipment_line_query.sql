@@ -1,1 +1,0 @@
-INSERT INTO equipment_lines (id, name) VALUES ($1, $2);

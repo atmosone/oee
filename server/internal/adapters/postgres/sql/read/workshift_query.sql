@@ -1,1 +1,0 @@
-SELECT id, name, status, duration, started_at, finished_at FROM workshifts WHERE id = $1;
