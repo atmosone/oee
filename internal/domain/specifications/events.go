@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	EventTypeCreated    = cqrs.EventType("evt.specifications.created")
-	EventTypeDeprecated = cqrs.EventType("evt.specifications.deprecated")
+	EventTypeCreated    = cqrs.EventType("specification_created")
+	EventTypeDeprecated = cqrs.EventType("specification_deprecated")
 )
 
 type CreatedEvent struct {

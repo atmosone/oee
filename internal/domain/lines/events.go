@@ -3,10 +3,10 @@ package lines
 import "github.com/atmosone/cqrs"
 
 const (
-	EventTypeCreated          = cqrs.EventType("evt.lines.created")
-	EventTypeEquipmentAdded   = cqrs.EventType("evt.lines.equipment_added")
-	EventTypeEquipmentMoved   = cqrs.EventType("evt.lines.equipment_moved")
-	EventTypeEquipmentRemoved = cqrs.EventType("evt.lines.equipment_removed")
+	EventTypeCreated          = cqrs.EventType("line_created")
+	EventTypeEquipmentAdded   = cqrs.EventType("equipment_added_to_line")
+	EventTypeEquipmentMoved   = cqrs.EventType("equipment_moved_in_line")
+	EventTypeEquipmentRemoved = cqrs.EventType("equipment_removed_from_line")
 )
 
 type CreatedEvent struct {

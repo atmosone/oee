@@ -8,6 +8,7 @@ import (
 	"github.com/atmosone/oee/internal/domain/equipment"
 )
 
+var ErrLineAlreadyExists = errors.New("lines: line already exists")
 var ErrLineNotFound = errors.New("lines: line not found")
 var ErrEquipmentAlreadyExists = errors.New("lines: equipment already exists")
 var ErrEquipmentNotExists = errors.New("lines: equipment not exists")

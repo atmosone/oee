@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	EventTypeRuleCreated       = cqrs.EventType("evt.qualification.rule_created")
-	EventTypeRuleRemoved       = cqrs.EventType("evt.qualification.rule_removed")
-	EventTypeDowntimeQualified = cqrs.EventType("evt.qualification.downtime_qualified")
+	EventTypeRuleCreated       = cqrs.EventType("qualification_rule_created")
+	EventTypeRuleRemoved       = cqrs.EventType("qualification_rule_removed")
+	EventTypeDowntimeQualified = cqrs.EventType("downtime_qualified")
 )
 
 type RuleCreatedEvent struct {

@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	EventTypeStarted  = cqrs.EventType("evt.downtimes.started")
-	EventTypeFinished = cqrs.EventType("evt.downtimes.finished")
+	EventTypeStarted  = cqrs.EventType("downtime_started")
+	EventTypeFinished = cqrs.EventType("downtime_finished")
 )
 
 type StartedEvent struct {

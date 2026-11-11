@@ -16,10 +16,13 @@ import (
 
 	"github.com/atmosone/cqrs"
 	"github.com/atmosone/oee/internal/adapters/openapi"
+	"github.com/atmosone/oee/internal/adapters/openapi/services"
 	"github.com/atmosone/oee/internal/adapters/postgres"
 	"github.com/atmosone/oee/internal/commands"
 	_ "github.com/lib/pq"
 )
+
+const DSN = "postgres://postgres:postgres@localhost:5432/oee?sslmode=disable"
 
 //go:embed sql/postgres/schema.sql
 var schema string
@@ -48,7 +51,7 @@ func main() {
 		Level: slog.LevelDebug,
 	}))
 	// Application Data Access Layer
-	db, err := sql.Open("postgres", "")
+	db, err := sql.Open("postgres", DSN)
 	if err != nil {
 		return
 	}
@@ -114,7 +117,16 @@ func main() {
 	app.OnCommand(commands.CommandTypeFinishWorkshift, commands.FinishWorkshift(workshifts))
 	app.Build(postgres.NewWorkshiftDowntimesProjection(logger, db))
 
-	server := openapi.New(":8880", app)
+	router := http.NewServeMux()
+	server := &http.Server{
+		Addr: ":8880",
+		Handler: openapi.New(router,
+			services.NewManagementService(logger, app),
+			services.NewEdgeService(logger, app),
+			services.NewEventService(logger, app),
+		),
+	}
+
 	go func() {
 		if err := server.ListenAndServe(); err != nil &&
 			!errors.Is(err, http.ErrServerClosed) {

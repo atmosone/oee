@@ -1,0 +1,1239 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "OEE",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "commands"
+    },
+    {
+      "name": "equipment"
+    },
+    {
+      "name": "lines"
+    },
+    {
+      "name": "specifications"
+    },
+    {
+      "name": "workshifts"
+    },
+    {
+      "name": "downtimes"
+    },
+    {
+      "name": "qualification"
+    },
+    {
+      "name": "events"
+    }
+  ],
+  "paths": {
+    "/equipment/commands/create": {
+      "post": {
+        "summary": "CreateEquipment",
+        "deprecated": false,
+        "description": "Creates new Equipment instance",
+        "operationId": "create_equipment",
+        "tags": [
+          "commands",
+          "equipment"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEquipmentCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/lines/commands/create": {
+      "post": {
+        "summary": "CreateLine",
+        "deprecated": false,
+        "description": "Creates new Line instance",
+        "operationId": "create_line",
+        "tags": [
+          "commands",
+          "lines"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLineCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/lines/commands/add_equipment": {
+      "post": {
+        "summary": "AddEquipmentToLine",
+        "deprecated": false,
+        "description": "Adds Equipment to Line",
+        "operationId": "add_equipment_to_line",
+        "tags": [
+          "commands",
+          "lines",
+          "equipment"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddEquipmentToLineCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/lines/commands/move_equipment": {
+      "post": {
+        "summary": "MoveEquipmentInLine",
+        "deprecated": false,
+        "description": "Moves Equipment in Line (changes Equipment position)",
+        "operationId": "move_equipment_in_line",
+        "tags": [
+          "commands",
+          "lines",
+          "equipment"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoveEquipmentInLineCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/lines/commands/remove_equipment": {
+      "post": {
+        "summary": "RemoveEquipmentFromLine",
+        "deprecated": false,
+        "description": "Removes Equipment from Line",
+        "operationId": "remove_equipment_from_line",
+        "tags": [
+          "commands",
+          "lines",
+          "equipment"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveEquipmentFromLineCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/specifications/commands/create": {
+      "post": {
+        "summary": "CreateSpecification",
+        "deprecated": false,
+        "description": "Creates new Specification instance",
+        "operationId": "create_specification",
+        "tags": [
+          "commands",
+          "specifications"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSpecificationCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/specifications/commands/deprecate": {
+      "post": {
+        "summary": "DeprecateSpecification",
+        "deprecated": false,
+        "description": "Deprecates Specification",
+        "operationId": "deprecate_specification",
+        "tags": [
+          "commands",
+          "specifications"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeprecateSpecificationCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/workshifts/commands/start": {
+      "post": {
+        "summary": "StartWorkshift",
+        "deprecated": false,
+        "description": "Starts new Workshift",
+        "operationId": "start_workshift",
+        "tags": [
+          "commands",
+          "workshifts"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartWorkshiftCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/workshifts/commands/finish": {
+      "post": {
+        "summary": "FinishWorkshift",
+        "deprecated": false,
+        "description": "Finish Workshift",
+        "operationId": "finish_workshift",
+        "tags": [
+          "commands",
+          "workshifts"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinishWorkshiftCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": []
+      }
+    },
+    "/downtimes/commands/start": {
+      "post": {
+        "summary": "StartDowntime",
+        "deprecated": false,
+        "description": "Starts new Downtime",
+        "operationId": "start_downtime",
+        "tags": [
+          "commands",
+          "equipment",
+          "downtimes"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartDowntimeCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/downtimes/commands/finish": {
+      "post": {
+        "summary": "FinishDowntime",
+        "deprecated": false,
+        "description": "Finish Downtime",
+        "operationId": "finish_downtime",
+        "tags": [
+          "commands",
+          "equipment",
+          "downtimes"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": []
+      }
+    },
+    "/qualification/commands/create_rule": {
+      "post": {
+        "summary": "CreateQualificationRule",
+        "deprecated": false,
+        "description": "Creates qualification rule command",
+        "operationId": "create_qualification_rule",
+        "tags": [
+          "commands",
+          "qualification",
+          "specifications",
+          "equipment"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateQualificationRuleCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": []
+      }
+    },
+    "/qualification/commands/remove_rule": {
+      "post": {
+        "summary": "RemoveQualificationRule",
+        "deprecated": false,
+        "description": "Removes qualification rule",
+        "operationId": "remove_qualification_rule",
+        "tags": [
+          "commands",
+          "qualification",
+          "equipment",
+          "specifications"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveQualificationRuleCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/qualification/commands/qualify": {
+      "post": {
+        "summary": "QualifyDowntime",
+        "deprecated": false,
+        "description": "Qualifies Downtime",
+        "operationId": "qualify_downtime",
+        "tags": [
+          "commands",
+          "qualification",
+          "downtimes",
+          "specifications"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QualifyDowntimeCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": []
+      }
+    },
+    "/events": {
+      "get": {
+        "summary": "EventStream",
+        "deprecated": false,
+        "description": "Event Stream",
+        "operationId": "events",
+        "tags": [
+          "events"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageEvent"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EquipmentID": {
+        "type": "string",
+        "description": "Equipment id"
+      },
+      "EquipmentName": {
+        "type": "string",
+        "description": "Equipment name"
+      },
+      "EquipmentCategory": {
+        "type": "string",
+        "description": "Equipment category"
+      },
+      "LineID": {
+        "type": "string",
+        "description": "Line id"
+      },
+      "LineName": {
+        "type": "string",
+        "description": "Line name"
+      },
+      "SpecificationID": {
+        "type": "string",
+        "description": "Specification id"
+      },
+      "SpecificationCode": {
+        "type": "string",
+        "description": "Specification code"
+      },
+      "SpecificationDescription": {
+        "type": "string",
+        "description": "Specification description"
+      },
+      "CreateEquipmentCommand": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Equipment id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/EquipmentName",
+            "description": "Equipment name"
+          },
+          "category": {
+            "$ref": "#/components/schemas/EquipmentCategory",
+            "description": "Equipment category"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "category"
+        ],
+        "description": "Command to create equipment"
+      },
+      "CreateLineCommand": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/LineID",
+            "description": "Line id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LineName",
+            "description": "Line name"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "description": "Command to create line"
+      },
+      "CreateSpecificationCommand": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/SpecificationID",
+            "description": "Specification id"
+          },
+          "code": {
+            "$ref": "#/components/schemas/SpecificationCode",
+            "description": "Specification code"
+          },
+          "description": {
+            "$ref": "#/components/schemas/SpecificationDescription",
+            "description": "Specification description"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "description"
+        ],
+        "description": "Command to create specification"
+      },
+      "AddEquipmentToLineCommand": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/LineID",
+            "description": "Line id"
+          },
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Equuipment id"
+          }
+        },
+        "required": [
+          "id",
+          "equipment_id"
+        ],
+        "description": "Command to add equipment to line"
+      },
+      "MoveEquipmentInLineCommand": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/LineID",
+            "description": "Line id"
+          },
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Equipment id"
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "left",
+              "right"
+            ],
+            "description": "Move direction"
+          }
+        },
+        "required": [
+          "id",
+          "equipment_id",
+          "direction"
+        ],
+        "description": "Command to move equipment in line"
+      },
+      "RemoveEquipmentFromLineCommand": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/LineID",
+            "description": "Line id"
+          },
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Equipment id"
+          }
+        },
+        "required": [
+          "id",
+          "equipment_id"
+        ],
+        "description": "Command to remove equipment from line"
+      },
+      "DeprecateSpecificationCommand": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/SpecificationID",
+            "description": "Specification id"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "description": "Command to deprecate specification"
+      },
+      "StartWorkshiftCommand": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/WorkshiftID",
+            "description": "Workshift id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/WorkshiftName",
+            "description": "Workshift name"
+          },
+          "started_at": {
+            "type": "string",
+            "description": "Workshift start time",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "started_at"
+        ],
+        "description": "Command to start workshift"
+      },
+      "FinishWorkshiftCommand": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/WorkshiftID",
+            "description": "Workshift id"
+          },
+          "finished_at": {
+            "type": "string",
+            "description": "Workshift finish time",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "finished_at"
+        ],
+        "description": "Command to finish workshift"
+      },
+      "StartDowntimeCommand": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/DowntimeID",
+            "description": "Downtime id"
+          },
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Equipment id"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Downtime start time"
+          }
+        },
+        "required": [
+          "id",
+          "started_at",
+          "equipment_id"
+        ],
+        "description": "Command to start downtime"
+      },
+      "CreateQualificationRuleCommand": {
+        "type": "object",
+        "properties": {
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Equipment id"
+          },
+          "specification_id": {
+            "$ref": "#/components/schemas/SpecificationID",
+            "description": "Specification id"
+          }
+        },
+        "required": [
+          "equipment_id",
+          "specification_id"
+        ],
+        "description": "Command to create qualification rule"
+      },
+      "RemoveQualificationRuleCommand": {
+        "type": "object",
+        "properties": {
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Equipment id"
+          },
+          "specification_id": {
+            "$ref": "#/components/schemas/SpecificationID",
+            "description": "Specification id"
+          }
+        },
+        "required": [
+          "equipment_id",
+          "specification_id"
+        ],
+        "description": "Command to remove qualification rule"
+      },
+      "QualifyDowntimeCommand": {
+        "type": "object",
+        "properties": {
+          "downtime_id": {
+            "$ref": "#/components/schemas/DowntimeID",
+            "description": "Downtime id"
+          },
+          "specification_id": {
+            "$ref": "#/components/schemas/SpecificationID",
+            "description": "Specification id"
+          },
+          "comment": {
+            "$ref": "#/components/schemas/QualificationComment",
+            "description": "Qualification comment"
+          }
+        },
+        "required": [
+          "downtime_id",
+          "specification_id",
+          "comment"
+        ],
+        "description": "Command to qualify downtime"
+      },
+      "WorkshiftID": {
+        "type": "string",
+        "description": "Workshift id"
+      },
+      "WorkshiftName": {
+        "type": "string",
+        "description": "Workshift name"
+      },
+      "WorkshiftStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "finished"
+        ]
+      },
+      "DowntimeID": {
+        "type": "string",
+        "description": "Downtime id"
+      },
+      "DowntimeStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "finished"
+        ]
+      },
+      "QualificationComment": {
+        "type": "string",
+        "description": "Qualification comment"
+      },
+      "EventType": {
+        "type": "string",
+        "enum": [
+          "equipment_created",
+          "line_created",
+          "equipment_added_to_line",
+          "equipment_moved_in_line",
+          "equipment_removed_from_line",
+          "qualification_rule_created",
+          "qualification_rule_removed",
+          "downtime_qualified",
+          "specification_created",
+          "specification_deprecated",
+          "workshift_started",
+          "workshift_finished",
+          "downtime_started",
+          "downtime_finished"
+        ],
+        "description": "Event type"
+      },
+      "EquipmentCreatedEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Created equipment id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/EquipmentName",
+            "description": "Created equipment name"
+          },
+          "category": {
+            "$ref": "#/components/schemas/EquipmentCategory",
+            "description": "Created equipment category"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "category"
+        ],
+        "description": "Equipment created event"
+      },
+      "LineCreatedEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/LineID",
+            "description": "Created line id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LineName",
+            "description": "Created line name"
+          }
+        },
+        "description": "Line created event",
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "EquipmentAddedToLineEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/LineID",
+            "description": "Line id"
+          },
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Added equipment id"
+          },
+          "position": {
+            "type": "integer",
+            "description": "Added equipment position"
+          }
+        },
+        "required": [
+          "id",
+          "equipment_id",
+          "position"
+        ],
+        "description": "Equipment added to line command"
+      },
+      "EquipmentMovedInLineEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/LineID",
+            "description": "Line id"
+          },
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Moved equipment id"
+          },
+          "position": {
+            "type": "integer",
+            "description": "Moved to position"
+          }
+        },
+        "description": "Equipment moved in line event",
+        "required": [
+          "id",
+          "equipment_id",
+          "position"
+        ]
+      },
+      "EquipmentRemovedFromLineEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/LineID",
+            "description": "Line id"
+          },
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Removed equipment id"
+          }
+        },
+        "required": [
+          "id",
+          "equipment_id"
+        ],
+        "description": "Equipment removed from line event"
+      },
+      "SpecificationCreatedEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/SpecificationID",
+            "description": "Created specification id"
+          },
+          "code": {
+            "$ref": "#/components/schemas/SpecificationCode",
+            "description": "Created specification code"
+          },
+          "description": {
+            "$ref": "#/components/schemas/SpecificationDescription",
+            "description": "Created specification description"
+          },
+          "deprecated": {
+            "type": "boolean",
+            "description": "Created specification deprecated"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "description",
+          "deprecated"
+        ],
+        "description": "Specification created event"
+      },
+      "SpecificationDeprecatedEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/SpecificationID",
+            "description": "Deprecated specification id"
+          },
+          "deprecated": {
+            "type": "boolean",
+            "description": "Specification deprecated field"
+          }
+        },
+        "required": [
+          "id",
+          "deprecated"
+        ],
+        "description": "Specification deprecated event"
+      },
+      "WorkshiftStartedEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/WorkshiftID",
+            "description": "Started workshift id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/WorkshiftName",
+            "description": "Started workshift name"
+          },
+          "status": {
+            "description": "Started workshift status",
+            "$ref": "#/components/schemas/WorkshiftStatus"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Workshift started at"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "started_at",
+          "status"
+        ],
+        "description": "Workshift started event"
+      },
+      "WorkshiftFinishedEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/WorkshiftID",
+            "description": "Finished workshift id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/WorkshiftStatus",
+            "description": "Finished workshift status"
+          },
+          "finished_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Workshift finished at"
+          },
+          "duration": {
+            "type": "integer",
+            "description": "Finished workshift duration (ns)"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "finished_at",
+          "duration"
+        ],
+        "description": "Workshift finished event"
+      },
+      "DowntimeStartedEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/DowntimeID",
+            "description": "Started downtime id"
+          },
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Started downtime equipment id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DowntimeStatus",
+            "description": "Started downtime status"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Downtime started at"
+          }
+        },
+        "required": [
+          "id",
+          "equipment_id",
+          "status",
+          "started_at"
+        ],
+        "description": "Downtime started event"
+      },
+      "DowntimeFinishedEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/DowntimeID",
+            "description": "Finished downtime id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DowntimeStatus",
+            "description": "Finished downtime status"
+          },
+          "finished_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Downtime finished at"
+          },
+          "duration": {
+            "type": "integer",
+            "description": "Finished downtime duration (ns)"
+          }
+        },
+        "description": "Downtime finished event",
+        "required": [
+          "id",
+          "status",
+          "finished_at",
+          "duration"
+        ]
+      },
+      "QualificationRuleCreatedEvent": {
+        "type": "object",
+        "properties": {
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Created qualification rule equipment id"
+          },
+          "specification_id": {
+            "$ref": "#/components/schemas/SpecificationID",
+            "description": "Created qualification rule specification id"
+          }
+        },
+        "required": [
+          "equipment_id",
+          "specification_id"
+        ],
+        "description": "Qualification rule created event"
+      },
+      "QualificationRuleRemovedEvent": {
+        "type": "object",
+        "properties": {
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Removed qualification rule equipment id"
+          },
+          "specification_id": {
+            "$ref": "#/components/schemas/SpecificationID",
+            "description": "Removed qualification rule specification id"
+          }
+        },
+        "required": [
+          "equipment_id",
+          "specification_id"
+        ],
+        "description": "Qualification rule removed event"
+      },
+      "DowntimeQualifiedEvent": {
+        "type": "object",
+        "properties": {
+          "downtime_id": {
+            "$ref": "#/components/schemas/DowntimeID",
+            "description": "Qualified downtime id"
+          },
+          "specification_id": {
+            "$ref": "#/components/schemas/SpecificationID",
+            "description": "Qualified downtime specification id"
+          },
+          "comment": {
+            "$ref": "#/components/schemas/QualificationComment",
+            "description": "Qualified downtime comment"
+          }
+        },
+        "required": [
+          "downtime_id",
+          "specification_id",
+          "comment"
+        ],
+        "description": "Downtime qualified event"
+      },
+      "MessageEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Event id"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/EquipmentCreatedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/LineCreatedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/EquipmentAddedToLineEvent"
+              },
+              {
+                "$ref": "#/components/schemas/EquipmentMovedInLineEvent"
+              },
+              {
+                "$ref": "#/components/schemas/EquipmentRemovedFromLineEvent"
+              },
+              {
+                "$ref": "#/components/schemas/SpecificationCreatedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/SpecificationDeprecatedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/WorkshiftStartedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/WorkshiftFinishedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/DowntimeStartedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/DowntimeFinishedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/QualificationRuleCreatedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/QualificationRuleRemovedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/DowntimeQualifiedEvent"
+              }
+            ],
+            "description": "Event data"
+          },
+          "event": {
+            "$ref": "#/components/schemas/EventType",
+            "description": "Event type"
+          }
+        },
+        "required": [
+          "event",
+          "data"
+        ],
+        "description": "Event Stream Message"
+      }
+    },
+    "responses": {},
+    "securitySchemes": {}
+  },
+  "servers": [],
+  "security": []
+}

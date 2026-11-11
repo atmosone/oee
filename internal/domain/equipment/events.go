@@ -4,7 +4,7 @@ import (
 	"github.com/atmosone/cqrs"
 )
 
-const EventTypeCreated = cqrs.EventType("evt.equipment.created")
+const EventTypeCreated = cqrs.EventType("equipment_created")
 
 type CreatedEvent struct {
 	ID       string

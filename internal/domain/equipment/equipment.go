@@ -2,9 +2,12 @@ package equipment
 
 import (
 	"context"
+	"errors"
 
 	"github.com/atmosone/cqrs"
 )
+
+var ErrEquipmentAlreadyExists = errors.New("equipment: already exists")
 
 type ID string
 type Name string
