@@ -321,15 +321,7 @@ func (s *ManagementService) StartWorkshift(w http.ResponseWriter, r *http.Reques
 	}
 	if err := s.app.HandleCommand(ctx, cmd); err != nil {
 		switch {
-		case errors.Is(err, workshifts.ErrActiveAlreadyExists):
-			s.logger.DebugContext(ctx, "failed to start workshift",
-				slog.String("op", op),
-				slog.String("command_type", cmd.Type().String()),
-				slog.Any("error", err),
-			)
-			http.Error(w, err.Error(), http.StatusConflict)
-			return
-		case errors.Is(err, workshifts.ErrInvalidStartTime):
+		case errors.Is(err, workshifts.ErrValidationFailed):
 			s.logger.DebugContext(ctx, "failed to start workshift",
 				slog.String("op", op),
 				slog.String("command_type", cmd.Type().String()),
@@ -366,29 +358,21 @@ func (s *ManagementService) FinishWorkshift(w http.ResponseWriter, r *http.Reque
 	}
 	if err := s.app.HandleCommand(ctx, cmd); err != nil {
 		switch {
-		case errors.Is(err, workshifts.ErrWorkshiftNotFound):
+		case errors.Is(err, workshifts.ErrValidationFailed):
 			s.logger.DebugContext(ctx, "failed to finish workshift",
 				slog.String("op", op),
 				slog.String("command_type", cmd.Type().String()),
 				slog.Any("error", err),
 			)
-			http.Error(w, err.Error(), http.StatusNotFound)
-			return
-		case errors.Is(err, workshifts.ErrAlreadyFinished):
-			s.logger.DebugContext(ctx, "failed to start workshift",
-				slog.String("op", op),
-				slog.String("command_type", cmd.Type().String()),
-				slog.Any("error", err),
-			)
-			http.Error(w, err.Error(), http.StatusConflict)
-			return
-		case errors.Is(err, workshifts.ErrInvalidFinishTime):
-			s.logger.DebugContext(ctx, "failed to start workshift",
-				slog.String("op", op),
-				slog.String("command_type", cmd.Type().String()),
-				slog.Any("error", err),
-			)
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		case errors.Is(err, workshifts.ErrActiveNotExists):
+			s.logger.DebugContext(ctx, "failed to start workshift",
+				slog.String("op", op),
+				slog.String("command_type", cmd.Type().String()),
+				slog.Any("error", err),
+			)
+			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		default:
 			s.logger.ErrorContext(ctx, "failed to start workshift",

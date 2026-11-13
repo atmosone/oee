@@ -16,10 +16,12 @@
     "api": "npx openapi-typescript ../api/openapi/openapi.json -o ./src/api.ts"
   },
   "dependencies": {
+    "@mdi/font": "^7.4.47",
     "openapi-fetch": "^0.17.0",
     "pinia": "^4.0.3",
     "vue": "^3.5.42",
-    "vue-router": "^5.3.1"
+    "vue-router": "^5.3.1",
+    "vuetify": "^4.3.3"
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.5",
@@ -28,12 +30,12 @@
     "@vue/eslint-config-typescript": "^14.9.0",
     "@vue/tsconfig": "^0.9.1",
     "eslint": "^10.10.0",
-    "openapi-typescript": "^7.13.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-oxlint": "~1.82.0",
     "eslint-plugin-vue": "~10.11.0",
     "jiti": "^2.7.0",
     "npm-run-all2": "^9.0.3",
+    "openapi-typescript": "^7.13.0",
     "oxlint": "~1.82.0",
     "prettier": "3.9.6",
     "typescript": "~6.0.0",

@@ -4,6 +4,21 @@ import (
 	"time"
 )
 
+type Production struct {
+	Good   int64 `json:"good"`
+	Defect int64 `json:"defect"`
+}
+
+func (p Production) Quality() float64 {
+	if p.Good == 0 && p.Defect == 0 {
+		return 1
+	}
+	if p.Good == 0 {
+		return 0
+	}
+	return float64(p.Good+p.Defect) / float64(p.Good)
+}
+
 type Equipment struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
@@ -84,9 +99,10 @@ type TimelineItem struct {
 }
 
 type Report struct {
-	Workshift Workshift
-	Equipment Equipment
-	Downtimes []Downtime
+	Workshift  Workshift
+	Equipment  Equipment
+	Production []Production
+	Downtimes  []Downtime
 }
 
 func (r Report) PlanDuration(now time.Time) time.Duration {

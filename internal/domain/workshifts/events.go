@@ -12,10 +12,10 @@ const (
 )
 
 type StartedEvent struct {
-	ID        string
-	Name      string
-	Status    string
-	StartedAt time.Time
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Status    string    `json:"status"`
+	StartedAt time.Time `json:"started_at"`
 }
 
 func (e StartedEvent) Type() cqrs.EventType {
@@ -23,10 +23,10 @@ func (e StartedEvent) Type() cqrs.EventType {
 }
 
 type FinishedEvent struct {
-	ID         string
-	Status     string
-	FinishedAt time.Time
-	Duration   time.Duration
+	ID         string        `json:"id"`
+	Status     string        `json:"status"`
+	FinishedAt time.Time     `json:"finished_at"`
+	Duration   time.Duration `json:"duration"`
 }
 
 func (e FinishedEvent) Type() cqrs.EventType {

@@ -11,8 +11,7 @@ import (
 const CommandTypeFinishWorkshift = cqrs.CommandType("finish_workshift")
 
 type FinishWorkshiftCommand struct {
-	ID         workshifts.ID `json:"id"`
-	FinishedAt time.Time     `json:"finished_at"`
+	FinishedAt time.Time `json:"finished_at"`
 }
 
 func (c FinishWorkshiftCommand) Type() cqrs.CommandType {
@@ -27,16 +26,16 @@ type FinishWorkshiftRepositoryPort interface {
 func FinishWorkshift(repository FinishWorkshiftRepositoryPort) cqrs.CommandHandlerFunc {
 	return func(ctx context.Context, c cqrs.Command) ([]cqrs.Event, error) {
 		cmd := c.(FinishWorkshiftCommand)
-		workshift, err := repository.Workshift(ctx, cmd.ID)
+		changeover, err := repository.Changeover(ctx)
 		if err != nil {
 			return nil, err
 		}
-		if err := workshift.Finish(cmd.FinishedAt); err != nil {
+		if err := changeover.Finish(cmd.FinishedAt); err != nil {
 			return nil, err
 		}
-		if err := repository.Save(ctx, workshift); err != nil {
+		if err := repository.Save(ctx, changeover); err != nil {
 			return nil, err
 		}
-		return workshift.Events, nil
+		return changeover.Events, nil
 	}
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/atmosone/cqrs"
-	"github.com/atmosone/oee/internal/domain/downtimes"
+	"github.com/atmosone/oee/internal/domain/intervals"
 	"github.com/atmosone/oee/internal/domain/qualification"
 	"github.com/atmosone/oee/internal/domain/specifications"
 )
@@ -12,7 +12,7 @@ import (
 const CommandTypeQualifyDowntime = cqrs.CommandType("qualify_downtime")
 
 type QualifyDowntimeCommand struct {
-	DowntimeID      downtimes.ID          `json:"downtime_id"`
+	DowntimeID      intervals.ID          `json:"downtime_id"`
 	SpecificationID specifications.ID     `json:"specification_id"`
 	Comment         qualification.Comment `json:"comment"`
 }

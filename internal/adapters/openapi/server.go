@@ -11,6 +11,7 @@ type server struct {
 	*services.ManagementService
 	*services.EdgeService
 	*services.EventService
+	*services.ViewService
 }
 
 func New(
@@ -18,9 +19,15 @@ func New(
 	management *services.ManagementService,
 	edge *services.EdgeService,
 	event *services.EventService,
+	view *services.ViewService,
 ) http.Handler {
 	return openapi.HandlerWithOptions(
-		&server{ManagementService: management, EdgeService: edge, EventService: event},
+		&server{
+			ManagementService: management,
+			EdgeService:       edge,
+			EventService:      event,
+			ViewService:       view,
+		},
 		openapi.StdHTTPServerOptions{
 			BaseRouter: router,
 			BaseURL:    "/api",

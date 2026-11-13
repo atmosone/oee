@@ -22,13 +22,22 @@
       "name": "workshifts"
     },
     {
-      "name": "downtimes"
-    },
-    {
       "name": "qualification"
     },
     {
+      "name": "downtimes"
+    },
+    {
+      "name": "intervals"
+    },
+    {
+      "name": "production"
+    },
+    {
       "name": "events"
+    },
+    {
+      "name": "queries"
     }
   ],
   "paths": {
@@ -313,58 +322,6 @@
         "security": []
       }
     },
-    "/downtimes/commands/start": {
-      "post": {
-        "summary": "StartDowntime",
-        "deprecated": false,
-        "description": "Starts new Downtime",
-        "operationId": "start_downtime",
-        "tags": [
-          "commands",
-          "equipment",
-          "downtimes"
-        ],
-        "parameters": [],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/StartDowntimeCommand"
-              },
-              "examples": {}
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "headers": {}
-          }
-        },
-        "security": []
-      }
-    },
-    "/downtimes/commands/finish": {
-      "post": {
-        "summary": "FinishDowntime",
-        "deprecated": false,
-        "description": "Finish Downtime",
-        "operationId": "finish_downtime",
-        "tags": [
-          "commands",
-          "equipment",
-          "downtimes"
-        ],
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": []
-      }
-    },
     "/qualification/commands/create_rule": {
       "post": {
         "summary": "CreateQualificationRule",
@@ -462,6 +419,101 @@
         "security": []
       }
     },
+    "/intervals/commands/start": {
+      "post": {
+        "summary": "StartInterval",
+        "deprecated": false,
+        "description": "Starts new Worktime",
+        "operationId": "start_interval",
+        "tags": [
+          "commands",
+          "equipment",
+          "intervals"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartIntervalCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/intervals/commands/finish": {
+      "post": {
+        "summary": "FinishInterval",
+        "deprecated": false,
+        "description": "Finishes active Interval",
+        "operationId": "finish_interval",
+        "tags": [
+          "commands",
+          "equipment",
+          "intervals"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinishIntervalCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/production/commands/increase": {
+      "post": {
+        "summary": "IncreaseProduction",
+        "deprecated": false,
+        "description": "",
+        "operationId": "increase_production",
+        "tags": [
+          "commands",
+          "equipment",
+          "production"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IncreaseProductionCommand"
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": []
+      }
+    },
     "/events": {
       "get": {
         "summary": "EventStream",
@@ -487,42 +539,183 @@
         },
         "security": []
       }
+    },
+    "/lines/queries/list": {
+      "get": {
+        "summary": "LinesList",
+        "deprecated": false,
+        "description": "Lines list query",
+        "operationId": "lines_list",
+        "tags": [
+          "lines",
+          "queries"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinesList"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/lines/queries/topology": {
+      "get": {
+        "summary": "LineTopology",
+        "deprecated": false,
+        "description": "Line topology query",
+        "operationId": "line_topology",
+        "tags": [
+          "queries",
+          "lines",
+          "equipment"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Line id",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/LineID"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LineTopology"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/workshifts/queries/current": {
+      "get": {
+        "summary": "CurrentWorkshift",
+        "deprecated": false,
+        "description": "Returns current workshift",
+        "operationId": "current_workshift",
+        "tags": [
+          "queries",
+          "workshifts"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentWorkshift"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/intervals/queries/current": {
+      "get": {
+        "summary": "CurrentInterval",
+        "deprecated": false,
+        "description": "Returns current equipment interval",
+        "operationId": "current_interval",
+        "tags": [
+          "queries",
+          "equipment",
+          "intervals"
+        ],
+        "parameters": [
+          {
+            "name": "equipment_id",
+            "in": "query",
+            "description": "Equipment id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EquipmentID"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentInterval"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/intervals/queries/current_list": {
+      "get": {
+        "summary": "CurrentIntervalsList",
+        "deprecated": false,
+        "description": "Returns current intervals list",
+        "operationId": "current_intervals_list",
+        "tags": [
+          "queries",
+          "intervals",
+          "equipment"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentIntervalsList"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
     }
   },
   "components": {
     "schemas": {
-      "EquipmentID": {
-        "type": "string",
-        "description": "Equipment id"
-      },
-      "EquipmentName": {
-        "type": "string",
-        "description": "Equipment name"
-      },
-      "EquipmentCategory": {
-        "type": "string",
-        "description": "Equipment category"
-      },
-      "LineID": {
-        "type": "string",
-        "description": "Line id"
-      },
-      "LineName": {
-        "type": "string",
-        "description": "Line name"
-      },
-      "SpecificationID": {
-        "type": "string",
-        "description": "Specification id"
-      },
-      "SpecificationCode": {
-        "type": "string",
-        "description": "Specification code"
-      },
-      "SpecificationDescription": {
-        "type": "string",
-        "description": "Specification description"
-      },
       "CreateEquipmentCommand": {
         "type": "object",
         "properties": {
@@ -546,6 +739,18 @@
         ],
         "description": "Command to create equipment"
       },
+      "EquipmentID": {
+        "type": "string",
+        "description": "Equipment id"
+      },
+      "EquipmentName": {
+        "type": "string",
+        "description": "Equipment name"
+      },
+      "EquipmentCategory": {
+        "type": "string",
+        "description": "Equipment category"
+      },
       "CreateLineCommand": {
         "type": "object",
         "properties": {
@@ -564,28 +769,13 @@
         ],
         "description": "Command to create line"
       },
-      "CreateSpecificationCommand": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "$ref": "#/components/schemas/SpecificationID",
-            "description": "Specification id"
-          },
-          "code": {
-            "$ref": "#/components/schemas/SpecificationCode",
-            "description": "Specification code"
-          },
-          "description": {
-            "$ref": "#/components/schemas/SpecificationDescription",
-            "description": "Specification description"
-          }
-        },
-        "required": [
-          "id",
-          "code",
-          "description"
-        ],
-        "description": "Command to create specification"
+      "LineID": {
+        "type": "string",
+        "description": "Line id"
+      },
+      "LineName": {
+        "type": "string",
+        "description": "Line name"
       },
       "AddEquipmentToLineCommand": {
         "type": "object",
@@ -650,6 +840,41 @@
         ],
         "description": "Command to remove equipment from line"
       },
+      "CreateSpecificationCommand": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/SpecificationID",
+            "description": "Specification id"
+          },
+          "code": {
+            "$ref": "#/components/schemas/SpecificationCode",
+            "description": "Specification code"
+          },
+          "description": {
+            "$ref": "#/components/schemas/SpecificationDescription",
+            "description": "Specification description"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "description"
+        ],
+        "description": "Command to create specification"
+      },
+      "SpecificationID": {
+        "type": "string",
+        "description": "Specification id"
+      },
+      "SpecificationCode": {
+        "type": "string",
+        "description": "Specification code"
+      },
+      "SpecificationDescription": {
+        "type": "string",
+        "description": "Specification description"
+      },
       "DeprecateSpecificationCommand": {
         "type": "object",
         "properties": {
@@ -687,13 +912,17 @@
         ],
         "description": "Command to start workshift"
       },
+      "WorkshiftID": {
+        "type": "string",
+        "description": "Workshift id"
+      },
+      "WorkshiftName": {
+        "type": "string",
+        "description": "Workshift name"
+      },
       "FinishWorkshiftCommand": {
         "type": "object",
         "properties": {
-          "id": {
-            "$ref": "#/components/schemas/WorkshiftID",
-            "description": "Workshift id"
-          },
           "finished_at": {
             "type": "string",
             "description": "Workshift finish time",
@@ -701,34 +930,9 @@
           }
         },
         "required": [
-          "id",
           "finished_at"
         ],
         "description": "Command to finish workshift"
-      },
-      "StartDowntimeCommand": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "$ref": "#/components/schemas/DowntimeID",
-            "description": "Downtime id"
-          },
-          "equipment_id": {
-            "$ref": "#/components/schemas/EquipmentID",
-            "description": "Equipment id"
-          },
-          "started_at": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Downtime start time"
-          }
-        },
-        "required": [
-          "id",
-          "started_at",
-          "equipment_id"
-        ],
-        "description": "Command to start downtime"
       },
       "CreateQualificationRuleCommand": {
         "type": "object",
@@ -770,8 +974,8 @@
         "type": "object",
         "properties": {
           "downtime_id": {
-            "$ref": "#/components/schemas/DowntimeID",
-            "description": "Downtime id"
+            "description": "Downtime id",
+            "$ref": "#/components/schemas/IntervalID"
           },
           "specification_id": {
             "$ref": "#/components/schemas/SpecificationID",
@@ -789,55 +993,169 @@
         ],
         "description": "Command to qualify downtime"
       },
-      "WorkshiftID": {
+      "IntervalID": {
         "type": "string",
-        "description": "Workshift id"
-      },
-      "WorkshiftName": {
-        "type": "string",
-        "description": "Workshift name"
-      },
-      "WorkshiftStatus": {
-        "type": "string",
-        "enum": [
-          "active",
-          "finished"
-        ]
-      },
-      "DowntimeID": {
-        "type": "string",
-        "description": "Downtime id"
-      },
-      "DowntimeStatus": {
-        "type": "string",
-        "enum": [
-          "active",
-          "finished"
-        ]
+        "description": "Worktime id"
       },
       "QualificationComment": {
         "type": "string",
         "description": "Qualification comment"
       },
-      "EventType": {
+      "StartIntervalCommand": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/IntervalID",
+            "description": "Started worktime id"
+          },
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Started worktime equipment id"
+          },
+          "category": {
+            "$ref": "#/components/schemas/IntervalCategory",
+            "description": "Started interval category"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Worktime start time"
+          }
+        },
+        "required": [
+          "id",
+          "started_at",
+          "equipment_id",
+          "category"
+        ],
+        "description": "Command to start worktime"
+      },
+      "IntervalCategory": {
         "type": "string",
         "enum": [
-          "equipment_created",
-          "line_created",
-          "equipment_added_to_line",
-          "equipment_moved_in_line",
-          "equipment_removed_from_line",
-          "qualification_rule_created",
-          "qualification_rule_removed",
-          "downtime_qualified",
-          "specification_created",
-          "specification_deprecated",
-          "workshift_started",
-          "workshift_finished",
-          "downtime_started",
-          "downtime_finished"
+          "downtime",
+          "worktime"
         ],
-        "description": "Event type"
+        "description": "Interval category"
+      },
+      "FinishIntervalCommand": {
+        "type": "object",
+        "properties": {
+          "equipment_id": {
+            "description": "Finished interval equipment id",
+            "$ref": "#/components/schemas/EquipmentID"
+          },
+          "finished_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Interval finished at"
+          }
+        },
+        "required": [
+          "equipment_id",
+          "finished_at"
+        ],
+        "description": "Command to finish interval"
+      },
+      "IncreaseProductionCommand": {
+        "type": "object",
+        "properties": {
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Increased production equipment id"
+          },
+          "category": {
+            "$ref": "#/components/schemas/ProductionCategory",
+            "description": "Increased production category"
+          },
+          "amount": {
+            "$ref": "#/components/schemas/ProductionAmount",
+            "description": "Increased production amount"
+          }
+        },
+        "description": "Command to increase production",
+        "required": [
+          "equipment_id",
+          "category",
+          "amount"
+        ]
+      },
+      "ProductionCategory": {
+        "type": "string",
+        "enum": [
+          "good",
+          "defect"
+        ],
+        "description": "Production category"
+      },
+      "ProductionAmount": {
+        "type": "integer",
+        "description": "Production amount"
+      },
+      "MessageEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Event id"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/EquipmentCreatedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/LineCreatedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/EquipmentAddedToLineEvent"
+              },
+              {
+                "$ref": "#/components/schemas/EquipmentMovedInLineEvent"
+              },
+              {
+                "$ref": "#/components/schemas/EquipmentRemovedFromLineEvent"
+              },
+              {
+                "$ref": "#/components/schemas/SpecificationCreatedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/SpecificationDeprecatedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/WorkshiftStartedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/WorkshiftFinishedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/QualificationRuleCreatedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/QualificationRuleRemovedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/DowntimeQualifiedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/IntervalStartedEvent"
+              },
+              {
+                "$ref": "#/components/schemas/IntervalFinishedAt"
+              }
+            ],
+            "description": "Event data"
+          },
+          "event": {
+            "$ref": "#/components/schemas/EventType",
+            "description": "Event type"
+          }
+        },
+        "required": [
+          "event",
+          "data"
+        ],
+        "description": "Event Stream Message"
       },
       "EquipmentCreatedEvent": {
         "type": "object",
@@ -1048,64 +1366,6 @@
         ],
         "description": "Workshift finished event"
       },
-      "DowntimeStartedEvent": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "$ref": "#/components/schemas/DowntimeID",
-            "description": "Started downtime id"
-          },
-          "equipment_id": {
-            "$ref": "#/components/schemas/EquipmentID",
-            "description": "Started downtime equipment id"
-          },
-          "status": {
-            "$ref": "#/components/schemas/DowntimeStatus",
-            "description": "Started downtime status"
-          },
-          "started_at": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Downtime started at"
-          }
-        },
-        "required": [
-          "id",
-          "equipment_id",
-          "status",
-          "started_at"
-        ],
-        "description": "Downtime started event"
-      },
-      "DowntimeFinishedEvent": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "$ref": "#/components/schemas/DowntimeID",
-            "description": "Finished downtime id"
-          },
-          "status": {
-            "$ref": "#/components/schemas/DowntimeStatus",
-            "description": "Finished downtime status"
-          },
-          "finished_at": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Downtime finished at"
-          },
-          "duration": {
-            "type": "integer",
-            "description": "Finished downtime duration (ns)"
-          }
-        },
-        "description": "Downtime finished event",
-        "required": [
-          "id",
-          "status",
-          "finished_at",
-          "duration"
-        ]
-      },
       "QualificationRuleCreatedEvent": {
         "type": "object",
         "properties": {
@@ -1146,7 +1406,6 @@
         "type": "object",
         "properties": {
           "downtime_id": {
-            "$ref": "#/components/schemas/DowntimeID",
             "description": "Qualified downtime id"
           },
           "specification_id": {
@@ -1165,70 +1424,228 @@
         ],
         "description": "Downtime qualified event"
       },
-      "MessageEvent": {
+      "IntervalStartedEvent": {
         "type": "object",
         "properties": {
           "id": {
+            "$ref": "#/components/schemas/IntervalID",
+            "description": "Started interval id"
+          },
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Started interval equipment id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/IntervalStatus",
+            "description": "Started interval status"
+          },
+          "category": {
+            "$ref": "#/components/schemas/IntervalCategory",
+            "description": "Started interval category"
+          },
+          "started_at": {
             "type": "string",
-            "description": "Event id"
+            "format": "date-time",
+            "description": "Interval started at"
+          }
+        },
+        "description": "Interval started event",
+        "required": [
+          "id",
+          "status",
+          "equipment_id",
+          "started_at",
+          "category"
+        ]
+      },
+      "IntervalFinishedAt": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/IntervalID",
+            "description": "Finished interval id"
           },
-          "data": {
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/EquipmentCreatedEvent"
-              },
-              {
-                "$ref": "#/components/schemas/LineCreatedEvent"
-              },
-              {
-                "$ref": "#/components/schemas/EquipmentAddedToLineEvent"
-              },
-              {
-                "$ref": "#/components/schemas/EquipmentMovedInLineEvent"
-              },
-              {
-                "$ref": "#/components/schemas/EquipmentRemovedFromLineEvent"
-              },
-              {
-                "$ref": "#/components/schemas/SpecificationCreatedEvent"
-              },
-              {
-                "$ref": "#/components/schemas/SpecificationDeprecatedEvent"
-              },
-              {
-                "$ref": "#/components/schemas/WorkshiftStartedEvent"
-              },
-              {
-                "$ref": "#/components/schemas/WorkshiftFinishedEvent"
-              },
-              {
-                "$ref": "#/components/schemas/DowntimeStartedEvent"
-              },
-              {
-                "$ref": "#/components/schemas/DowntimeFinishedEvent"
-              },
-              {
-                "$ref": "#/components/schemas/QualificationRuleCreatedEvent"
-              },
-              {
-                "$ref": "#/components/schemas/QualificationRuleRemovedEvent"
-              },
-              {
-                "$ref": "#/components/schemas/DowntimeQualifiedEvent"
-              }
-            ],
-            "description": "Event data"
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Finished interval equipment id"
           },
-          "event": {
-            "$ref": "#/components/schemas/EventType",
-            "description": "Event type"
+          "status": {
+            "$ref": "#/components/schemas/IntervalStatus",
+            "description": "Finished interval status"
+          },
+          "category": {
+            "$ref": "#/components/schemas/IntervalCategory",
+            "description": "Finished interval category"
+          },
+          "finished_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Interval  finished at"
+          },
+          "duration": {
+            "type": "integer",
+            "description": "Finished interval duration"
           }
         },
         "required": [
-          "event",
-          "data"
+          "id",
+          "status",
+          "finished_at",
+          "duration",
+          "category",
+          "equipment_id"
         ],
-        "description": "Event Stream Message"
+        "description": "Interval finished event"
+      },
+      "EventType": {
+        "type": "string",
+        "enum": [
+          "equipment_created",
+          "line_created",
+          "equipment_added_to_line",
+          "equipment_moved_in_line",
+          "equipment_removed_from_line",
+          "qualification_rule_created",
+          "qualification_rule_removed",
+          "downtime_qualified",
+          "specification_created",
+          "specification_deprecated",
+          "workshift_started",
+          "workshift_finished",
+          "downtime_started",
+          "downtime_finished"
+        ],
+        "description": "Event type"
+      },
+      "WorkshiftStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "finished"
+        ]
+      },
+      "IntervalStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "finished"
+        ],
+        "description": "Worktime status"
+      },
+      "LinesList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/LinesListItem"
+        },
+        "description": "Lines list"
+      },
+      "LinesListItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/LineID",
+            "description": "Line id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LineName",
+            "description": "Line name"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "description": "Lines list item"
+      },
+      "LineTopology": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/LineTopologyItem"
+        },
+        "description": "Line topology"
+      },
+      "LineTopologyItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Equipment id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/EquipmentName",
+            "description": "Equipment name"
+          },
+          "category": {
+            "$ref": "#/components/schemas/EquipmentCategory",
+            "description": "Equipment category"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "category"
+        ],
+        "description": "LineTopologyItem"
+      },
+      "CurrentWorkshift": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/WorkshiftID",
+            "description": "Current workshift id"
+          },
+          "name": {
+            "$ref": "#/components/schemas/WorkshiftName",
+            "description": "Current workshift name"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Current workshift start time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "started_at"
+        ],
+        "description": "Current workshift"
+      },
+      "CurrentInterval": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/IntervalID",
+            "description": "Current interval id"
+          },
+          "equipment_id": {
+            "$ref": "#/components/schemas/EquipmentID",
+            "description": "Current interval equipment id"
+          },
+          "category": {
+            "$ref": "#/components/schemas/IntervalCategory",
+            "description": "Current interval category"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Current interval start time"
+          }
+        },
+        "required": [
+          "id",
+          "equipment_id",
+          "category",
+          "started_at"
+        ],
+        "description": "Current interval"
+      },
+      "CurrentIntervalsList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CurrentInterval"
+        },
+        "description": "Current intervals list"
       }
     },
     "responses": {},

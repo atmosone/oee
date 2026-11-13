@@ -19,6 +19,7 @@ import (
 	"github.com/atmosone/oee/internal/adapters/openapi/services"
 	"github.com/atmosone/oee/internal/adapters/postgres"
 	"github.com/atmosone/oee/internal/commands"
+	"github.com/atmosone/oee/internal/queries"
 	_ "github.com/lib/pq"
 )
 
@@ -75,11 +76,10 @@ func main() {
 		postgres.NewLineReader(db),
 		postgres.NewLineSaver(db),
 	)
-	// Install downtimes repository
-	downtimes := postgres.NewDowntimesRepository(
-		postgres.NewDowntimeActiveChecker(db),
-		postgres.NewDowntimeReader(db),
-		postgres.NewDowntimeSaver(db),
+	// Install worktimes repository
+	intervals := postgres.NewIntervalsRepository(
+		postgres.NewIntervalReader(db),
+		postgres.NewIntervalSaver(db),
 	)
 	// Install specifications repository
 	specifications := postgres.NewSpecificationsRepository(
@@ -88,9 +88,8 @@ func main() {
 	)
 	// Install workshifts repository
 	workshifts := postgres.NewWorkshiftsRepository(
-		postgres.NewWorkshiftActiveChecker(db),
-		postgres.NewWorkshiftReader(db),
-		postgres.NewWorkshiftSaver(db),
+		postgres.NewWorkshiftsReader(db),
+		postgres.NewWorkshiftsSaver(db),
 	)
 	qualification := postgres.NewQualificationRepository(
 		postgres.NewQualificationSpecificationReader(db),
@@ -98,16 +97,21 @@ func main() {
 		postgres.NewQualificationReader(db),
 		postgres.NewQualificationSaver(db),
 	)
+	production := postgres.NewProductionRepository(
+		postgres.NewProductionReader(db),
+		postgres.NewProductionSaver(db),
+	)
 	// Install [cqrs.App]
 	app := cqrs.New()
 	app.OnPanic(func(r any) { debug.PrintStack() })
+	// Command side
 	app.OnCommand(commands.CommandTypeCreateEquipment, commands.CreateEquipment(equipment))
 	app.OnCommand(commands.CommandTypeCreateLine, commands.CreateLine(lines))
 	app.OnCommand(commands.CommandTypeAddEquipmentToLine, commands.AddEquipmentToLine(lines))
 	app.OnCommand(commands.CommandTypeMoveEquipmentInLine, commands.MoveEquipmentInLine(lines))
 	app.OnCommand(commands.CommandTypeRemoveEquipmentFromLine, commands.RemoveEquipmentFromLine(lines))
-	app.OnCommand(commands.CommandTypeStartDowntime, commands.StartDowntime(downtimes))
-	app.OnCommand(commands.CommandTypeFinishDowntime, commands.FinishDowntime(downtimes))
+	app.OnCommand(commands.CommandTypeStartInterval, commands.StartInterval(intervals))
+	app.OnCommand(commands.CommandTypeFinishInterval, commands.FinishInterval(intervals))
 	app.OnCommand(commands.CommandTypeQualifyDowntime, commands.QualifyDowntime(qualification))
 	app.OnCommand(commands.CommandTypeCreateQualificationRule, commands.CreateQualificationRule(qualification))
 	app.OnCommand(commands.CommandTypeRemoveQualificationRule, commands.RemoveQualificationRule(qualification))
@@ -115,7 +119,16 @@ func main() {
 	app.OnCommand(commands.CommandTypeDeprecateSpecification, commands.DeprecateSpecification(specifications))
 	app.OnCommand(commands.CommandTypeStartWorkshift, commands.StartWorkshift(workshifts))
 	app.OnCommand(commands.CommandTypeFinishWorkshift, commands.FinishWorkshift(workshifts))
-	app.Build(postgres.NewWorkshiftDowntimesProjection(logger, db))
+	app.OnCommand(commands.CommandTypeIncreaseProduction, commands.IncreaseProduction(production))
+	// Query side
+	app.OnQuery(queries.QueryTypeLinesList, postgres.LinesList(db))
+	app.OnQuery(queries.QueryTypeLineTopology, postgres.LineTopology(db))
+	app.OnQuery(queries.QueryTypeCurrentInterval, postgres.CurrentInterval(db))
+	app.OnQuery(queries.QueryTypeCurrentWorkshift, postgres.CurrentWorkshift(db))
+	app.OnQuery(queries.QueryTypeCurrentIntervalsList, postgres.CurrentIntervalsList(db))
+	app.Build(postgres.NewWorkshiftsIntervalsProjection(logger, db))
+	app.Build(postgres.NewWorkshiftProductionCounter(logger, db))
+	app.Build(postgres.NewOeeMetricsBuilder(logger, db))
 
 	router := http.NewServeMux()
 	server := &http.Server{
@@ -124,6 +137,7 @@ func main() {
 			services.NewManagementService(logger, app),
 			services.NewEdgeService(logger, app),
 			services.NewEventService(logger, app),
+			services.NewViewService(logger, app),
 		),
 	}
 

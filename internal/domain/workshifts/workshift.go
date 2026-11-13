@@ -1,20 +1,14 @@
 package workshifts
 
 import (
-	"context"
 	"errors"
+	"fmt"
 	"time"
-
-	"github.com/atmosone/cqrs"
 )
 
-var (
-	ErrWorkshiftNotFound   = errors.New("workshifts: workshift not found")
-	ErrActiveAlreadyExists = errors.New("workshifts: active already exists")
-	ErrAlreadyFinished     = errors.New("workshifts: already finished")
-	ErrInvalidStartTime    = errors.New("workshifts: invalid start time")
-	ErrInvalidFinishTime   = errors.New("workshifts: invalid finish time")
-)
+var ErrAlreadyFinished = errors.New("workshifts: already finished")
+var ErrActiveNotExists = errors.New("workshifts: active not exists")
+var ErrValidationFailed = errors.New("workshifts: validation failed")
 
 type ID string
 
@@ -34,67 +28,38 @@ type Workshift struct {
 	StartedAt  time.Time
 	FinishedAt time.Time
 	Duration   time.Duration
-	Events     []cqrs.Event
 }
 
-func (w *Workshift) Finish(finishedAt time.Time) error {
-	if w.Status == StatusFinished {
-		return ErrAlreadyFinished
+func start(id ID, name Name, startedAt time.Time) (*Workshift, error) {
+	if id == "" {
+		return nil, fmt.Errorf("%w (empty id value)", ErrValidationFailed)
 	}
-	if finishedAt.IsZero() || finishedAt.Before(w.StartedAt) {
-		return ErrInvalidFinishTime
+	if name == "" {
+		return nil, fmt.Errorf("%w (empty name value)", ErrValidationFailed)
 	}
-	w.Status = StatusFinished
-	w.FinishedAt = finishedAt.UTC()
-	w.Duration = w.FinishedAt.Sub(w.StartedAt)
-	w.Events = append(w.Events, FinishedEvent{
-		ID:         string(w.ID),
-		Status:     string(w.Status),
-		FinishedAt: w.FinishedAt,
-		Duration:   w.Duration,
-	})
-	return nil
-}
-
-type ActiveChecker interface {
-	ActiveWorkshift(context.Context) (bool, error)
-}
-
-type Saver interface {
-	Save(context.Context, *Workshift) error
-}
-
-type Reader interface {
-	Workshift(context.Context, ID) (*Workshift, error)
-}
-
-func Start(
-	ctx context.Context,
-	activeChecker ActiveChecker,
-	id ID,
-	name Name,
-	startedAt time.Time,
-) (*Workshift, error) {
 	if startedAt.IsZero() {
-		return nil, ErrInvalidStartTime
-	}
-	exists, err := activeChecker.ActiveWorkshift(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if exists {
-		return nil, ErrActiveAlreadyExists
+		return nil, fmt.Errorf("%w (zero start time value)", ErrValidationFailed)
 	}
 	return &Workshift{
 		ID:        id,
 		Name:      name,
 		Status:    StatusActive,
 		StartedAt: startedAt.UTC(),
-		Events: []cqrs.Event{StartedEvent{
-			ID:        string(id),
-			Name:      string(name),
-			Status:    string(StatusActive),
-			StartedAt: startedAt.UTC(),
-		}},
 	}, nil
+}
+
+func (w *Workshift) finish(finishedAt time.Time) error {
+	if finishedAt.IsZero() {
+		return fmt.Errorf("%w (zero finish time value)", ErrValidationFailed)
+	}
+	if w.Status == StatusFinished {
+		return ErrAlreadyFinished
+	}
+	if w.StartedAt.After(finishedAt) {
+		return fmt.Errorf("%w (invalid finish time value)", ErrValidationFailed)
+	}
+	w.Status = StatusFinished
+	w.FinishedAt = finishedAt.UTC()
+	w.Duration = w.FinishedAt.Sub(w.StartedAt)
+	return nil
 }

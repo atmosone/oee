@@ -304,6 +304,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/lines/queries/topology": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * LineTopology
+         * @description Line topology query
+         */
+        get: operations["line_topology"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/lines/queries/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * LinesList
+         * @description Lines list query
+         */
+        get: operations["lines_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -601,6 +641,26 @@ export interface components {
             /** @description Event type */
             event: components["schemas"]["EventType"];
         };
+        /** @description LineTopologyItem */
+        LineTopologyItem: {
+            /** @description Equipment id */
+            id: components["schemas"]["EquipmentID"];
+            /** @description Equipment name */
+            name: components["schemas"]["EquipmentName"];
+            /** @description Equipment category */
+            category: components["schemas"]["EquipmentCategory"];
+        };
+        /** @description Line topology */
+        LineTopology: components["schemas"]["LineTopologyItem"][];
+        /** @description Lines list item */
+        LinesListItem: {
+            /** @description Line id */
+            id: components["schemas"]["LineID"];
+            /** @description Line name */
+            name: components["schemas"]["LineName"];
+        };
+        /** @description Lines list */
+        LinesList: components["schemas"]["LinesListItem"][];
     };
     responses: never;
     parameters: never;
@@ -915,6 +975,47 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MessageEvent"];
+                };
+            };
+        };
+    };
+    line_topology: {
+        parameters: {
+            query?: {
+                /** @description Line id */
+                id?: components["schemas"]["LineID"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LineTopology"];
+                };
+            };
+        };
+    };
+    lines_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LinesList"];
                 };
             };
         };

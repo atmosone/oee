@@ -8,7 +8,8 @@ import (
 
 	"github.com/atmosone/cqrs"
 	"github.com/atmosone/oee/internal/commands"
-	"github.com/atmosone/oee/internal/domain/downtimes"
+	"github.com/atmosone/oee/internal/domain/intervals"
+	"github.com/atmosone/oee/internal/domain/production"
 	"github.com/atmosone/oee/internal/domain/qualification"
 )
 
@@ -22,9 +23,9 @@ func NewEdgeService(logger *slog.Logger, app cqrs.CommandHandler) *EdgeService {
 }
 
 // StartDowntime implements [openapi.ServerInterface].
-func (s *EdgeService) StartDowntime(w http.ResponseWriter, r *http.Request) {
-	const op = "adapters.openapi.services.EdgeService.StartDowntime"
-	var cmd commands.StartDowntimeCommand
+func (s *EdgeService) FinishInterval(w http.ResponseWriter, r *http.Request) {
+	const op = "adapters.openapi.services.EdgeService.FinishInterval"
+	var cmd commands.FinishIntervalCommand
 	ctx := r.Context()
 	if err := json.NewDecoder(r.Body).Decode(&cmd); err != nil {
 		s.logger.DebugContext(ctx, "failed to decode command",
@@ -37,16 +38,24 @@ func (s *EdgeService) StartDowntime(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := s.app.HandleCommand(ctx, cmd); err != nil {
 		switch {
-		case errors.Is(err, downtimes.ErrInvalidStartTime):
-			s.logger.DebugContext(ctx, "failed to finish downtime",
+		case errors.Is(err, intervals.ErrNotFound):
+			s.logger.DebugContext(ctx, "failed to finish interval",
+				slog.String("op", op),
+				slog.String("command_type", cmd.Type().String()),
+				slog.Any("error", err),
+			)
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		case errors.Is(err, intervals.ErrValidationFailed):
+			s.logger.DebugContext(ctx, "failed to finish interval",
 				slog.String("op", op),
 				slog.String("command_type", cmd.Type().String()),
 				slog.Any("error", err),
 			)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
-		case errors.Is(err, downtimes.ErrActiveAlreadyExists):
-			s.logger.DebugContext(ctx, "failed to start downtime",
+		case errors.Is(err, intervals.ErrAlreadyFinished):
+			s.logger.DebugContext(ctx, "failed to finish interval",
 				slog.String("op", op),
 				slog.String("command_type", cmd.Type().String()),
 				slog.Any("error", err),
@@ -54,7 +63,7 @@ func (s *EdgeService) StartDowntime(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusConflict)
 			return
 		default:
-			s.logger.ErrorContext(ctx, "failed to start downtime",
+			s.logger.ErrorContext(ctx, "failed to finish interval",
 				slog.String("op", op),
 				slog.String("command_type", cmd.Type().String()),
 				slog.Any("error", err),
@@ -66,10 +75,9 @@ func (s *EdgeService) StartDowntime(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// FinishDowntime implements [openapi.ServerInterface].
-func (s *EdgeService) FinishDowntime(w http.ResponseWriter, r *http.Request) {
-	const op = "adapters.openapi.services.EdgeService.FinishDowntime"
-	var cmd commands.FinishDowntimeCommand
+func (s *EdgeService) StartInterval(w http.ResponseWriter, r *http.Request) {
+	const op = "adapters.openapi.services.EdgeService.StartInterval"
+	var cmd commands.StartIntervalCommand
 	ctx := r.Context()
 	if err := json.NewDecoder(r.Body).Decode(&cmd); err != nil {
 		s.logger.DebugContext(ctx, "failed to decode command",
@@ -82,32 +90,24 @@ func (s *EdgeService) FinishDowntime(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := s.app.HandleCommand(ctx, cmd); err != nil {
 		switch {
-		case errors.Is(err, downtimes.ErrDowntimeNotFound):
-			s.logger.DebugContext(ctx, "failed to finish downtime",
-				slog.String("op", op),
-				slog.String("command_type", cmd.Type().String()),
-				slog.Any("error", err),
-			)
-			http.Error(w, err.Error(), http.StatusNotFound)
-			return
-		case errors.Is(err, downtimes.ErrInvalidFinishTime):
-			s.logger.DebugContext(ctx, "failed to finish downtime",
+		case errors.Is(err, intervals.ErrValidationFailed):
+			s.logger.DebugContext(ctx, "failed to start interval",
 				slog.String("op", op),
 				slog.String("command_type", cmd.Type().String()),
 				slog.Any("error", err),
 			)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
-		case errors.Is(err, downtimes.ErrAlreadyFinished):
-			s.logger.DebugContext(ctx, "failed to finish downtime",
+		case errors.Is(err, intervals.ErrAlreadyExists):
+			s.logger.DebugContext(ctx, "failed to start interval",
 				slog.String("op", op),
 				slog.String("command_type", cmd.Type().String()),
 				slog.Any("error", err),
 			)
-			http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+			http.Error(w, err.Error(), http.StatusConflict)
 			return
 		default:
-			s.logger.ErrorContext(ctx, "failed to start downtime",
+			s.logger.ErrorContext(ctx, "failed to start interval",
 				slog.String("op", op),
 				slog.String("command_type", cmd.Type().String()),
 				slog.Any("error", err),
@@ -119,7 +119,51 @@ func (s *EdgeService) FinishDowntime(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// QualifyDowntime implements [openapi.ServerInterface].
+// IncreaseProduction implements [openapi.ServerInterface].
+func (s *EdgeService) IncreaseProduction(w http.ResponseWriter, r *http.Request) {
+	const op = "adapters.openapi.services.EdgeService.IncreaseProduction"
+	var cmd commands.IncreaseProductionCommand
+	ctx := r.Context()
+	if err := json.NewDecoder(r.Body).Decode(&cmd); err != nil {
+		s.logger.DebugContext(ctx, "failed to decode command",
+			slog.String("op", op),
+			slog.String("command_type", cmd.Type().String()),
+			slog.Any("error", err),
+		)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if err := s.app.HandleCommand(ctx, cmd); err != nil {
+		switch {
+		case errors.Is(err, production.ErrActiveIntervalNotFound):
+			s.logger.DebugContext(ctx, "failed to increase production",
+				slog.String("op", op),
+				slog.String("command_type", cmd.Type().String()),
+				slog.Any("error", err),
+			)
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		case errors.Is(err, production.ErrValidationFailed):
+			s.logger.DebugContext(ctx, "failed to increase production",
+				slog.String("op", op),
+				slog.String("command_type", cmd.Type().String()),
+				slog.Any("error", err),
+			)
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		default:
+			s.logger.ErrorContext(ctx, "failed to increase production",
+				slog.String("op", op),
+				slog.String("command_type", cmd.Type().String()),
+				slog.Any("error", err),
+			)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
 func (s *EdgeService) QualifyDowntime(w http.ResponseWriter, r *http.Request) {
 	const op = "adapters.openapi.services.EdgeService.QualifyDowntime"
 	var cmd commands.QualifyDowntimeCommand

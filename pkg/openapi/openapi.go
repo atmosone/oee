@@ -14,12 +14,6 @@ import (
 	"github.com/oapi-codegen/runtime"
 )
 
-// Defines values for DowntimeStatus.
-const (
-	DowntimeStatusActive   DowntimeStatus = "active"
-	DowntimeStatusFinished DowntimeStatus = "finished"
-)
-
 // Defines values for EventType.
 const (
 	DowntimeFinished         EventType = "downtime_finished"
@@ -38,10 +32,28 @@ const (
 	WorkshiftStarted         EventType = "workshift_started"
 )
 
+// Defines values for IntervalCategory.
+const (
+	Downtime IntervalCategory = "downtime"
+	Worktime IntervalCategory = "worktime"
+)
+
+// Defines values for IntervalStatus.
+const (
+	IntervalStatusActive   IntervalStatus = "active"
+	IntervalStatusFinished IntervalStatus = "finished"
+)
+
 // Defines values for MoveEquipmentInLineCommandDirection.
 const (
 	Left  MoveEquipmentInLineCommandDirection = "left"
 	Right MoveEquipmentInLineCommandDirection = "right"
+)
+
+// Defines values for ProductionCategory.
+const (
+	Defect ProductionCategory = "defect"
+	Good   ProductionCategory = "good"
 )
 
 // Defines values for WorkshiftStatus.
@@ -101,55 +113,53 @@ type CreateSpecificationCommand struct {
 	Id SpecificationID `json:"id"`
 }
 
+// CurrentInterval Current interval
+type CurrentInterval struct {
+	// Category Interval category
+	Category IntervalCategory `json:"category"`
+
+	// EquipmentId Equipment id
+	EquipmentId EquipmentID `json:"equipment_id"`
+
+	// Id Worktime id
+	Id IntervalID `json:"id"`
+
+	// StartedAt Current interval start time
+	StartedAt time.Time `json:"started_at"`
+}
+
+// CurrentIntervalsList Current intervals list
+type CurrentIntervalsList = []CurrentInterval
+
+// CurrentWorkshift Current workshift
+type CurrentWorkshift struct {
+	// Id Workshift id
+	Id WorkshiftID `json:"id"`
+
+	// Name Workshift name
+	Name WorkshiftName `json:"name"`
+
+	// StartedAt Current workshift start time
+	StartedAt time.Time `json:"started_at"`
+}
+
 // DeprecateSpecificationCommand Command to deprecate specification
 type DeprecateSpecificationCommand struct {
 	// Id Specification id
 	Id SpecificationID `json:"id"`
 }
 
-// DowntimeFinishedEvent Downtime finished event
-type DowntimeFinishedEvent struct {
-	// Duration Finished downtime duration (ns)
-	Duration int `json:"duration"`
-
-	// FinishedAt Downtime finished at
-	FinishedAt time.Time `json:"finished_at"`
-
-	// Id Downtime id
-	Id     DowntimeID     `json:"id"`
-	Status DowntimeStatus `json:"status"`
-}
-
-// DowntimeID Downtime id
-type DowntimeID = string
-
 // DowntimeQualifiedEvent Downtime qualified event
 type DowntimeQualifiedEvent struct {
 	// Comment Qualification comment
 	Comment QualificationComment `json:"comment"`
 
-	// DowntimeId Downtime id
-	DowntimeId DowntimeID `json:"downtime_id"`
+	// DowntimeId Qualified downtime id
+	DowntimeId interface{} `json:"downtime_id"`
 
 	// SpecificationId Specification id
 	SpecificationId SpecificationID `json:"specification_id"`
 }
-
-// DowntimeStartedEvent Downtime started event
-type DowntimeStartedEvent struct {
-	// EquipmentId Equipment id
-	EquipmentId EquipmentID `json:"equipment_id"`
-
-	// Id Downtime id
-	Id DowntimeID `json:"id"`
-
-	// StartedAt Downtime started at
-	StartedAt time.Time      `json:"started_at"`
-	Status    DowntimeStatus `json:"status"`
-}
-
-// DowntimeStatus defines model for DowntimeStatus.
-type DowntimeStatus string
 
 // EquipmentAddedToLineEvent Equipment added to line command
 type EquipmentAddedToLineEvent struct {
@@ -208,14 +218,80 @@ type EquipmentRemovedFromLineEvent struct {
 // EventType Event type
 type EventType string
 
+// FinishIntervalCommand Command to finish interval
+type FinishIntervalCommand struct {
+	// EquipmentId Equipment id
+	EquipmentId EquipmentID `json:"equipment_id"`
+
+	// FinishedAt Interval finished at
+	FinishedAt time.Time `json:"finished_at"`
+}
+
 // FinishWorkshiftCommand Command to finish workshift
 type FinishWorkshiftCommand struct {
 	// FinishedAt Workshift finish time
 	FinishedAt time.Time `json:"finished_at"`
-
-	// Id Workshift id
-	Id WorkshiftID `json:"id"`
 }
+
+// IncreaseProductionCommand Command to increase production
+type IncreaseProductionCommand struct {
+	// Amount Production amount
+	Amount ProductionAmount `json:"amount"`
+
+	// Category Production category
+	Category ProductionCategory `json:"category"`
+
+	// EquipmentId Equipment id
+	EquipmentId EquipmentID `json:"equipment_id"`
+}
+
+// IntervalCategory Interval category
+type IntervalCategory string
+
+// IntervalFinishedAt Interval finished event
+type IntervalFinishedAt struct {
+	// Category Interval category
+	Category IntervalCategory `json:"category"`
+
+	// Duration Finished interval duration
+	Duration int `json:"duration"`
+
+	// EquipmentId Equipment id
+	EquipmentId EquipmentID `json:"equipment_id"`
+
+	// FinishedAt Interval  finished at
+	FinishedAt time.Time `json:"finished_at"`
+
+	// Id Worktime id
+	Id IntervalID `json:"id"`
+
+	// Status Worktime status
+	Status IntervalStatus `json:"status"`
+}
+
+// IntervalID Worktime id
+type IntervalID = string
+
+// IntervalStartedEvent Interval started event
+type IntervalStartedEvent struct {
+	// Category Interval category
+	Category IntervalCategory `json:"category"`
+
+	// EquipmentId Equipment id
+	EquipmentId EquipmentID `json:"equipment_id"`
+
+	// Id Worktime id
+	Id IntervalID `json:"id"`
+
+	// StartedAt Interval started at
+	StartedAt time.Time `json:"started_at"`
+
+	// Status Worktime status
+	Status IntervalStatus `json:"status"`
+}
+
+// IntervalStatus Worktime status
+type IntervalStatus string
 
 // LineCreatedEvent Line created event
 type LineCreatedEvent struct {
@@ -231,6 +307,33 @@ type LineID = string
 
 // LineName Line name
 type LineName = string
+
+// LineTopology Line topology
+type LineTopology = []LineTopologyItem
+
+// LineTopologyItem LineTopologyItem
+type LineTopologyItem struct {
+	// Category Equipment category
+	Category EquipmentCategory `json:"category"`
+
+	// Id Equipment id
+	Id EquipmentID `json:"id"`
+
+	// Name Equipment name
+	Name EquipmentName `json:"name"`
+}
+
+// LinesList Lines list
+type LinesList = []LinesListItem
+
+// LinesListItem Lines list item
+type LinesListItem struct {
+	// Id Line id
+	Id LineID `json:"id"`
+
+	// Name Line name
+	Name LineName `json:"name"`
+}
 
 // MessageEvent Event Stream Message
 type MessageEvent struct {
@@ -264,6 +367,12 @@ type MoveEquipmentInLineCommand struct {
 // MoveEquipmentInLineCommandDirection Move direction
 type MoveEquipmentInLineCommandDirection string
 
+// ProductionAmount Production amount
+type ProductionAmount = int
+
+// ProductionCategory Production category
+type ProductionCategory string
+
 // QualificationComment Qualification comment
 type QualificationComment = string
 
@@ -290,8 +399,8 @@ type QualifyDowntimeCommand struct {
 	// Comment Qualification comment
 	Comment QualificationComment `json:"comment"`
 
-	// DowntimeId Downtime id
-	DowntimeId DowntimeID `json:"downtime_id"`
+	// DowntimeId Worktime id
+	DowntimeId IntervalID `json:"downtime_id"`
 
 	// SpecificationId Specification id
 	SpecificationId SpecificationID `json:"specification_id"`
@@ -348,15 +457,18 @@ type SpecificationDescription = string
 // SpecificationID Specification id
 type SpecificationID = string
 
-// StartDowntimeCommand Command to start downtime
-type StartDowntimeCommand struct {
+// StartIntervalCommand Command to start worktime
+type StartIntervalCommand struct {
+	// Category Interval category
+	Category IntervalCategory `json:"category"`
+
 	// EquipmentId Equipment id
 	EquipmentId EquipmentID `json:"equipment_id"`
 
-	// Id Downtime id
-	Id DowntimeID `json:"id"`
+	// Id Worktime id
+	Id IntervalID `json:"id"`
 
-	// StartedAt Downtime start time
+	// StartedAt Worktime start time
 	StartedAt time.Time `json:"started_at"`
 }
 
@@ -407,11 +519,32 @@ type WorkshiftStartedEvent struct {
 // WorkshiftStatus defines model for WorkshiftStatus.
 type WorkshiftStatus string
 
-// StartDowntimeJSONRequestBody defines body for StartDowntime for application/json ContentType.
-type StartDowntimeJSONRequestBody = StartDowntimeCommand
+// CurrentIntervalMultipartBody defines parameters for CurrentInterval.
+type CurrentIntervalMultipartBody = map[string]interface{}
+
+// CurrentIntervalParams defines parameters for CurrentInterval.
+type CurrentIntervalParams struct {
+	// EquipmentId Equipment id
+	EquipmentId EquipmentID `form:"equipment_id" json:"equipment_id"`
+}
+
+// LineTopologyParams defines parameters for LineTopology.
+type LineTopologyParams struct {
+	// Id Line id
+	Id *LineID `form:"id,omitempty" json:"id,omitempty"`
+}
 
 // CreateEquipmentJSONRequestBody defines body for CreateEquipment for application/json ContentType.
 type CreateEquipmentJSONRequestBody = CreateEquipmentCommand
+
+// FinishIntervalJSONRequestBody defines body for FinishInterval for application/json ContentType.
+type FinishIntervalJSONRequestBody = FinishIntervalCommand
+
+// StartIntervalJSONRequestBody defines body for StartInterval for application/json ContentType.
+type StartIntervalJSONRequestBody = StartIntervalCommand
+
+// CurrentIntervalMultipartRequestBody defines body for CurrentInterval for multipart/form-data ContentType.
+type CurrentIntervalMultipartRequestBody = CurrentIntervalMultipartBody
 
 // AddEquipmentToLineJSONRequestBody defines body for AddEquipmentToLine for application/json ContentType.
 type AddEquipmentToLineJSONRequestBody = AddEquipmentToLineCommand
@@ -424,6 +557,9 @@ type MoveEquipmentInLineJSONRequestBody = MoveEquipmentInLineCommand
 
 // RemoveEquipmentFromLineJSONRequestBody defines body for RemoveEquipmentFromLine for application/json ContentType.
 type RemoveEquipmentFromLineJSONRequestBody = RemoveEquipmentFromLineCommand
+
+// IncreaseProductionJSONRequestBody defines body for IncreaseProduction for application/json ContentType.
+type IncreaseProductionJSONRequestBody = IncreaseProductionCommand
 
 // CreateQualificationRuleJSONRequestBody defines body for CreateQualificationRule for application/json ContentType.
 type CreateQualificationRuleJSONRequestBody = CreateQualificationRuleCommand
@@ -680,58 +816,6 @@ func (t *MessageEvent_Data) MergeWorkshiftFinishedEvent(v WorkshiftFinishedEvent
 	return err
 }
 
-// AsDowntimeStartedEvent returns the union data inside the MessageEvent_Data as a DowntimeStartedEvent
-func (t MessageEvent_Data) AsDowntimeStartedEvent() (DowntimeStartedEvent, error) {
-	var body DowntimeStartedEvent
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromDowntimeStartedEvent overwrites any union data inside the MessageEvent_Data as the provided DowntimeStartedEvent
-func (t *MessageEvent_Data) FromDowntimeStartedEvent(v DowntimeStartedEvent) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeDowntimeStartedEvent performs a merge with any union data inside the MessageEvent_Data, using the provided DowntimeStartedEvent
-func (t *MessageEvent_Data) MergeDowntimeStartedEvent(v DowntimeStartedEvent) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsDowntimeFinishedEvent returns the union data inside the MessageEvent_Data as a DowntimeFinishedEvent
-func (t MessageEvent_Data) AsDowntimeFinishedEvent() (DowntimeFinishedEvent, error) {
-	var body DowntimeFinishedEvent
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromDowntimeFinishedEvent overwrites any union data inside the MessageEvent_Data as the provided DowntimeFinishedEvent
-func (t *MessageEvent_Data) FromDowntimeFinishedEvent(v DowntimeFinishedEvent) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeDowntimeFinishedEvent performs a merge with any union data inside the MessageEvent_Data, using the provided DowntimeFinishedEvent
-func (t *MessageEvent_Data) MergeDowntimeFinishedEvent(v DowntimeFinishedEvent) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
 // AsQualificationRuleCreatedEvent returns the union data inside the MessageEvent_Data as a QualificationRuleCreatedEvent
 func (t MessageEvent_Data) AsQualificationRuleCreatedEvent() (QualificationRuleCreatedEvent, error) {
 	var body QualificationRuleCreatedEvent
@@ -810,6 +894,58 @@ func (t *MessageEvent_Data) MergeDowntimeQualifiedEvent(v DowntimeQualifiedEvent
 	return err
 }
 
+// AsIntervalStartedEvent returns the union data inside the MessageEvent_Data as a IntervalStartedEvent
+func (t MessageEvent_Data) AsIntervalStartedEvent() (IntervalStartedEvent, error) {
+	var body IntervalStartedEvent
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromIntervalStartedEvent overwrites any union data inside the MessageEvent_Data as the provided IntervalStartedEvent
+func (t *MessageEvent_Data) FromIntervalStartedEvent(v IntervalStartedEvent) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeIntervalStartedEvent performs a merge with any union data inside the MessageEvent_Data, using the provided IntervalStartedEvent
+func (t *MessageEvent_Data) MergeIntervalStartedEvent(v IntervalStartedEvent) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsIntervalFinishedAt returns the union data inside the MessageEvent_Data as a IntervalFinishedAt
+func (t MessageEvent_Data) AsIntervalFinishedAt() (IntervalFinishedAt, error) {
+	var body IntervalFinishedAt
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromIntervalFinishedAt overwrites any union data inside the MessageEvent_Data as the provided IntervalFinishedAt
+func (t *MessageEvent_Data) FromIntervalFinishedAt(v IntervalFinishedAt) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeIntervalFinishedAt performs a merge with any union data inside the MessageEvent_Data, using the provided IntervalFinishedAt
+func (t *MessageEvent_Data) MergeIntervalFinishedAt(v IntervalFinishedAt) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 func (t MessageEvent_Data) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
@@ -822,18 +958,24 @@ func (t *MessageEvent_Data) UnmarshalJSON(b []byte) error {
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// FinishDowntime
-	// (POST /downtimes/commands/finish)
-	FinishDowntime(w http.ResponseWriter, r *http.Request)
-	// StartDowntime
-	// (POST /downtimes/commands/start)
-	StartDowntime(w http.ResponseWriter, r *http.Request)
 	// CreateEquipment
 	// (POST /equipment/commands/create)
 	CreateEquipment(w http.ResponseWriter, r *http.Request)
 	// EventStream
 	// (GET /events)
 	Events(w http.ResponseWriter, r *http.Request)
+	// FinishInterval
+	// (POST /intervals/commands/finish)
+	FinishInterval(w http.ResponseWriter, r *http.Request)
+	// StartInterval
+	// (POST /intervals/commands/start)
+	StartInterval(w http.ResponseWriter, r *http.Request)
+	// CurrentInterval
+	// (GET /intervals/queries/current)
+	CurrentInterval(w http.ResponseWriter, r *http.Request, params CurrentIntervalParams)
+	// CurrentIntervalsList
+	// (GET /intervals/queries/current_list)
+	CurrentIntervalsList(w http.ResponseWriter, r *http.Request)
 	// AddEquipmentToLine
 	// (POST /lines/commands/add_equipment)
 	AddEquipmentToLine(w http.ResponseWriter, r *http.Request)
@@ -846,6 +988,15 @@ type ServerInterface interface {
 	// RemoveEquipmentFromLine
 	// (POST /lines/commands/remove_equipment)
 	RemoveEquipmentFromLine(w http.ResponseWriter, r *http.Request)
+	// LinesList
+	// (GET /lines/queries/list)
+	LinesList(w http.ResponseWriter, r *http.Request)
+	// LineTopology
+	// (GET /lines/queries/topology)
+	LineTopology(w http.ResponseWriter, r *http.Request, params LineTopologyParams)
+	// IncreaseProduction
+	// (POST /production/commands/increase)
+	IncreaseProduction(w http.ResponseWriter, r *http.Request)
 	// CreateQualificationRule
 	// (POST /qualification/commands/create_rule)
 	CreateQualificationRule(w http.ResponseWriter, r *http.Request)
@@ -867,6 +1018,9 @@ type ServerInterface interface {
 	// StartWorkshift
 	// (POST /workshifts/commands/start)
 	StartWorkshift(w http.ResponseWriter, r *http.Request)
+	// CurrentWorkshift
+	// (GET /workshifts/queries/current)
+	CurrentWorkshift(w http.ResponseWriter, r *http.Request)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -877,36 +1031,6 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
-
-// FinishDowntime operation middleware
-func (siw *ServerInterfaceWrapper) FinishDowntime(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.FinishDowntime(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
-
-// StartDowntime operation middleware
-func (siw *ServerInterfaceWrapper) StartDowntime(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.StartDowntime(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
 
 // CreateEquipment operation middleware
 func (siw *ServerInterfaceWrapper) CreateEquipment(w http.ResponseWriter, r *http.Request) {
@@ -929,6 +1053,86 @@ func (siw *ServerInterfaceWrapper) Events(w http.ResponseWriter, r *http.Request
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.Events(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// FinishInterval operation middleware
+func (siw *ServerInterfaceWrapper) FinishInterval(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.FinishInterval(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// StartInterval operation middleware
+func (siw *ServerInterfaceWrapper) StartInterval(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.StartInterval(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// CurrentInterval operation middleware
+func (siw *ServerInterfaceWrapper) CurrentInterval(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CurrentIntervalParams
+
+	// ------------- Required query parameter "equipment_id" -------------
+
+	if paramValue := r.URL.Query().Get("equipment_id"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "equipment_id"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "equipment_id", r.URL.Query(), &params.EquipmentId)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "equipment_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CurrentInterval(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// CurrentIntervalsList operation middleware
+func (siw *ServerInterfaceWrapper) CurrentIntervalsList(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CurrentIntervalsList(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -989,6 +1193,64 @@ func (siw *ServerInterfaceWrapper) RemoveEquipmentFromLine(w http.ResponseWriter
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.RemoveEquipmentFromLine(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// LinesList operation middleware
+func (siw *ServerInterfaceWrapper) LinesList(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.LinesList(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// LineTopology operation middleware
+func (siw *ServerInterfaceWrapper) LineTopology(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params LineTopologyParams
+
+	// ------------- Optional query parameter "id" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "id", r.URL.Query(), &params.Id)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.LineTopology(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// IncreaseProduction operation middleware
+func (siw *ServerInterfaceWrapper) IncreaseProduction(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.IncreaseProduction(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1094,6 +1356,21 @@ func (siw *ServerInterfaceWrapper) StartWorkshift(w http.ResponseWriter, r *http
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.StartWorkshift(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// CurrentWorkshift operation middleware
+func (siw *ServerInterfaceWrapper) CurrentWorkshift(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CurrentWorkshift(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1217,14 +1494,19 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
-	m.HandleFunc("POST "+options.BaseURL+"/downtimes/commands/finish", wrapper.FinishDowntime)
-	m.HandleFunc("POST "+options.BaseURL+"/downtimes/commands/start", wrapper.StartDowntime)
 	m.HandleFunc("POST "+options.BaseURL+"/equipment/commands/create", wrapper.CreateEquipment)
 	m.HandleFunc("GET "+options.BaseURL+"/events", wrapper.Events)
+	m.HandleFunc("POST "+options.BaseURL+"/intervals/commands/finish", wrapper.FinishInterval)
+	m.HandleFunc("POST "+options.BaseURL+"/intervals/commands/start", wrapper.StartInterval)
+	m.HandleFunc("GET "+options.BaseURL+"/intervals/queries/current", wrapper.CurrentInterval)
+	m.HandleFunc("GET "+options.BaseURL+"/intervals/queries/current_list", wrapper.CurrentIntervalsList)
 	m.HandleFunc("POST "+options.BaseURL+"/lines/commands/add_equipment", wrapper.AddEquipmentToLine)
 	m.HandleFunc("POST "+options.BaseURL+"/lines/commands/create", wrapper.CreateLine)
 	m.HandleFunc("POST "+options.BaseURL+"/lines/commands/move_equipment", wrapper.MoveEquipmentInLine)
 	m.HandleFunc("POST "+options.BaseURL+"/lines/commands/remove_equipment", wrapper.RemoveEquipmentFromLine)
+	m.HandleFunc("GET "+options.BaseURL+"/lines/queries/list", wrapper.LinesList)
+	m.HandleFunc("GET "+options.BaseURL+"/lines/queries/topology", wrapper.LineTopology)
+	m.HandleFunc("POST "+options.BaseURL+"/production/commands/increase", wrapper.IncreaseProduction)
 	m.HandleFunc("POST "+options.BaseURL+"/qualification/commands/create_rule", wrapper.CreateQualificationRule)
 	m.HandleFunc("POST "+options.BaseURL+"/qualification/commands/qualify", wrapper.QualifyDowntime)
 	m.HandleFunc("POST "+options.BaseURL+"/qualification/commands/remove_rule", wrapper.RemoveQualificationRule)
@@ -1232,6 +1514,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("POST "+options.BaseURL+"/specifications/commands/deprecate", wrapper.DeprecateSpecification)
 	m.HandleFunc("POST "+options.BaseURL+"/workshifts/commands/finish", wrapper.FinishWorkshift)
 	m.HandleFunc("POST "+options.BaseURL+"/workshifts/commands/start", wrapper.StartWorkshift)
+	m.HandleFunc("GET "+options.BaseURL+"/workshifts/queries/current", wrapper.CurrentWorkshift)
 
 	return m
 }

@@ -1,11 +1,25 @@
-<script setup lang="ts"></script>
-
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <v-app>
+    <bar-widget @menu="menu = !menu"/>
+    <navigation-widget v-model="menu"/>
+    <v-main>
+      <router-view/>
+    </v-main>
+  </v-app>
 </template>
 
-<style scoped></style>
+<script lang="ts">
+import NavigationWidget from '@/widgets/NavigationWidget.vue';
+import BarWidget from './widgets/BarWidget.vue';
+
+export default {
+  name: "App",
+  components: {
+    BarWidget,
+    NavigationWidget,
+  },
+  data: () => ({
+    menu: true,
+  })
+}
+</script>

@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/atmosone/oee/internal/domain/downtimes"
 	"github.com/atmosone/oee/internal/domain/equipment"
+	"github.com/atmosone/oee/internal/domain/intervals"
 	"github.com/atmosone/oee/internal/domain/qualification"
 	"github.com/atmosone/oee/internal/domain/specifications"
 )
@@ -41,13 +41,13 @@ type QualificationDowntimeReader struct {
 func NewQualificationDowntimeReader(db *sql.DB) *QualificationDowntimeReader {
 	return &QualificationDowntimeReader{db: db}
 }
-func (qdr *QualificationDowntimeReader) Downtime(ctx context.Context, id downtimes.ID) (qualification.Downtime, error) {
+func (qdr *QualificationDowntimeReader) Downtime(ctx context.Context, id intervals.ID) (qualification.Downtime, error) {
 	const op = "adapters.postgres.qualification_repository.QualificationDowntimeReader.Downtime"
 	var downtime qualification.Downtime
 	if err := qdr.db.QueryRowContext(ctx,
-		`SELECT id, equipment_id, status FROM downtimes WHERE id = $1;`,
+		`SELECT id, equipment_id, status, category FROM intervals WHERE id = $1;`,
 		id,
-	).Scan(&downtime.ID, &downtime.EquipmentID, &downtime.Status); err != nil {
+	).Scan(&downtime.ID, &downtime.EquipmentID, &downtime.Status, &downtime.Category); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return qualification.Downtime{}, qualification.ErrDowntimeNotFound
 		}

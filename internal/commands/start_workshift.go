@@ -21,25 +21,27 @@ func (c StartWorkshiftCommand) Type() cqrs.CommandType {
 }
 
 type StartWorkshiftRepositoryPort interface {
-	workshifts.ActiveChecker
+	workshifts.Reader
 	workshifts.Saver
 }
 
 func StartWorkshift(repository StartWorkshiftRepositoryPort) cqrs.CommandHandlerFunc {
 	return func(ctx context.Context, c cqrs.Command) ([]cqrs.Event, error) {
 		cmd := c.(StartWorkshiftCommand)
-		workshift, err := workshifts.Start(ctx,
-			repository,
-			cmd.ID,
-			cmd.Name,
-			cmd.StartedAt,
-		)
+		changeover, err := repository.Changeover(ctx)
 		if err != nil {
 			return nil, err
 		}
-		if err := repository.Save(ctx, workshift); err != nil {
+		if err := changeover.Start(
+			cmd.ID,
+			cmd.Name,
+			cmd.StartedAt,
+		); err != nil {
 			return nil, err
 		}
-		return workshift.Events, nil
+		if err := repository.Save(ctx, changeover); err != nil {
+			return nil, err
+		}
+		return changeover.Events, nil
 	}
 }

@@ -5,8 +5,8 @@ import (
 	"errors"
 
 	"github.com/atmosone/cqrs"
-	"github.com/atmosone/oee/internal/domain/downtimes"
 	"github.com/atmosone/oee/internal/domain/equipment"
+	"github.com/atmosone/oee/internal/domain/intervals"
 	"github.com/atmosone/oee/internal/domain/specifications"
 )
 
@@ -22,13 +22,14 @@ var (
 )
 
 type Downtime struct {
-	ID          downtimes.ID
+	ID          intervals.ID
 	EquipmentID equipment.ID
-	Status      downtimes.Status
+	Status      intervals.Status
+	Category    intervals.Category
 }
 
 func (d Downtime) IsFinished() bool {
-	return d.Status == downtimes.StatusFinished
+	return d.Status == intervals.StatusFinished
 }
 
 type Specification struct {
@@ -101,7 +102,7 @@ func (q *Qualification) QualifyDowntime(
 }
 
 type DowntimeReader interface {
-	Downtime(context.Context, downtimes.ID) (Downtime, error)
+	Downtime(context.Context, intervals.ID) (Downtime, error)
 }
 
 type SpecificationReader interface {
