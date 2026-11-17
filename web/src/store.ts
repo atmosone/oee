@@ -4,8 +4,8 @@ import createClient from 'openapi-fetch'
 
 const useAppStore = defineStore('app', {
     state: () => ({
-        api: createClient<paths>({baseUrl: "/api"}),
-        sse: new EventSource("/api/events")
+        api: createClient<paths>({baseUrl: "/oee/api"}),
+        sse: new EventSource("/oee/api/events")
     })
 })
 

@@ -10,6 +10,7 @@ import (
 	"github.com/atmosone/oee/internal/domain/intervals"
 	"github.com/atmosone/oee/internal/domain/workshifts"
 	"github.com/atmosone/oee/internal/queries"
+	"github.com/atmosone/oee/internal/views"
 	"github.com/atmosone/oee/pkg/openapi"
 )
 
@@ -127,6 +128,64 @@ func CurrentIntervalsList(db *sql.DB) cqrs.QueryHandlerFunc {
 				return nil, fmt.Errorf("%s: %w", op, err)
 			}
 			res = append(res, item)
+		}
+		if err := rows.Err(); err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+		return res, nil
+	}
+}
+
+func EquipmentTimeline(db *sql.DB) cqrs.QueryHandlerFunc {
+	return func(ctx context.Context, q cqrs.Query) (cqrs.Result, error) {
+		const op = "adapters.postgres.queries.EquipmentTimeline"
+		query := q.(queries.EquipmentTimelineQuery)
+		var res views.Timeline
+		if err := db.QueryRowContext(ctx,
+			`SELECT id, name FROM equipment WHERE id = $1;`,
+			query.EquipmentID,
+		).Scan(&res.Equipment.ID,
+			&res.Equipment.Name,
+		); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return nil, fmt.Errorf("%w (equipment not found)", queries.ErrNotFound)
+			}
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+		if err := db.QueryRowContext(ctx,
+			`SELECT id, started_at, finished_at FROM workshifts WHERE id = $1;`,
+			query.WorkshiftID,
+		).Scan(&res.Workshift.ID,
+			&res.Workshift.Interval.StartedAt,
+			&res.Workshift.Interval.FinishedAt,
+		); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return nil, fmt.Errorf("%w (workshift not found)", queries.ErrNotFound)
+			}
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+		rows, err := db.QueryContext(ctx,
+			`SELECT i.id, i.category, i.started_at, i.finished_at FROM intervals i
+			JOIN workshifts_intervals wi ON i.id = wi.interval_id
+			WHERE wi.workshift_id = $1 
+			AND i.equipment_id = $2
+			ORDER BY i.started_at ASC;`,
+			query.WorkshiftID, query.EquipmentID,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var item views.TimelineRecord
+			if err := rows.Scan(&item.ID,
+				&item.Category,
+				&item.Interval.StartedAt,
+				&item.Interval.FinishedAt,
+			); err != nil {
+				return nil, fmt.Errorf("%s: %w", op, err)
+			}
+			res.Records = append(res.Records, item)
 		}
 		if err := rows.Err(); err != nil {
 			return nil, fmt.Errorf("%s: %w", op, err)

@@ -15,6 +15,7 @@ const (
 	QueryTypeCurrentWorkshift     = cqrs.QueryType("current_workshift")
 	QueryTypeCurrentInterval      = cqrs.QueryType("current_interval")
 	QueryTypeCurrentIntervalsList = cqrs.QueryType("current_intervals_list")
+	QueryTypeEquipmentTimeline    = cqrs.QueryType("equipment_timelime")
 )
 
 type LinesListQuery struct{}
@@ -49,4 +50,13 @@ type CurrentIntervalsListQuery struct{}
 
 func (q CurrentIntervalsListQuery) Type() cqrs.QueryType {
 	return QueryTypeCurrentIntervalsList
+}
+
+type EquipmentTimelineQuery struct {
+	WorkshiftID string
+	EquipmentID string
+}
+
+func (q EquipmentTimelineQuery) Type() cqrs.QueryType {
+	return QueryTypeEquipmentTimeline
 }

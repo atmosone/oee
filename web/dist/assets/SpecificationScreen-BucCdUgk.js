@@ -1,0 +1,1 @@
+import{I as e}from"./shared.esm-bundler-BSZ2DVky.js";import{i as t}from"./index-Dxy-u89Y.js";var n={name:`SpecificationScreen`};function r(t,n,r,i,a,o){return` Specification Screen `+e(t.$route.params.id)}var i=t(n,[[`render`,r]]);export{i as default};

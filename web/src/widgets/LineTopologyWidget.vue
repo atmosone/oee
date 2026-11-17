@@ -6,11 +6,17 @@
         size="x-small">
             <v-speed-dial location="right center">
                 <template #activator="{props}">
-                    <v-card v-bind="props" 
-                    :title="item.name" 
-                    :subtitle="item.category"
-                    class="border" 
-                    rounded="xl"/>
+                    <div class="d-flex align-center">
+                        <v-card v-bind="props" 
+                        width="300"
+                        :title="item.name" 
+                        :subtitle="item.id"
+                        class="border" 
+                        rounded="lg">
+                        <v-chip :text="item.category" rounded="lg"/>
+                        </v-card>
+                        <v-icon icon="mdi-chevron-right"/>
+                    </div>
                 </template>
                 <v-btn v-if="i > 0"
                 @click="move(item.id, 'left')"

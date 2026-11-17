@@ -5,9 +5,11 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/atmosone/cqrs"
 	"github.com/atmosone/oee/internal/queries"
+	"github.com/atmosone/oee/internal/views"
 	"github.com/atmosone/oee/pkg/openapi"
 )
 
@@ -95,4 +97,25 @@ func (s *ViewService) LinesList(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(res)
+}
+
+// ApexchartsTimeline implements [openapi.ServerInterface].
+func (s *ViewService) ApexchartsTimeline(w http.ResponseWriter, r *http.Request, params openapi.ApexchartsTimelineParams) {
+	res, err := s.app.HandleQuery(r.Context(), queries.EquipmentTimelineQuery{
+		WorkshiftID: params.WorkshiftId,
+		EquipmentID: params.EquipmentId,
+	})
+	if err != nil {
+		if errors.Is(err, queries.ErrNotFound) {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		s.logger.Error("failed to read", slog.Any("error", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	data := res.(views.Timeline)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(data.ApexchartsTimeline(time.Now()))
 }

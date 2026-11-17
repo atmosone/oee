@@ -1,0 +1,1 @@
+import{i as e}from"./index-Dxy-u89Y.js";var t={name:`StartPage`};function n(e,t,n,r,i,a){return` Start Page `}var r=e(t,[[`render`,n]]);export{r as default};

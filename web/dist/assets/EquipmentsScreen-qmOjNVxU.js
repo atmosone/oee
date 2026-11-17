@@ -1,0 +1,1 @@
+import{C as e,i as t,s as n,x as r}from"./index-Dxy-u89Y.js";var i={name:`EquipmentsScreen`};function a(t,i,a,o,s,c){let l=e(`router-view`);return r(),n(l)}var o=t(i,[[`render`,a]]);export{o as default};

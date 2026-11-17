@@ -6,9 +6,14 @@
 package openapi
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 
 	"github.com/oapi-codegen/runtime"
@@ -69,6 +74,27 @@ type AddEquipmentToLineCommand struct {
 
 	// Id Line id
 	Id LineID `json:"id"`
+}
+
+// ApexchartsTimeline defines model for ApexchartsTimeline.
+type ApexchartsTimeline struct {
+	// Data Timeline data
+	Data []ApexchartsTimelineBar `json:"data"`
+
+	// Name Interval category
+	Name IntervalCategory `json:"name"`
+}
+
+// ApexchartsTimelineBar defines model for ApexchartsTimelineBar.
+type ApexchartsTimelineBar struct {
+	// Id Worktime id
+	Id IntervalID `json:"id"`
+
+	// X Equipment name
+	X EquipmentName `json:"x"`
+
+	// Y Bar interval
+	Y []int `json:"y"`
 }
 
 // CreateEquipmentCommand Command to create equipment
@@ -519,6 +545,15 @@ type WorkshiftStartedEvent struct {
 // WorkshiftStatus defines model for WorkshiftStatus.
 type WorkshiftStatus string
 
+// ApexchartsTimelineParams defines parameters for ApexchartsTimeline.
+type ApexchartsTimelineParams struct {
+	// WorkshiftId Workshift id
+	WorkshiftId WorkshiftID `form:"workshift_id" json:"workshift_id"`
+
+	// EquipmentId Equipment id
+	EquipmentId EquipmentID `form:"equipment_id" json:"equipment_id"`
+}
+
 // CurrentIntervalMultipartBody defines parameters for CurrentInterval.
 type CurrentIntervalMultipartBody = map[string]interface{}
 
@@ -956,8 +991,2835 @@ func (t *MessageEvent_Data) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// RequestEditorFn  is the function signature for the RequestEditor callback function
+type RequestEditorFn func(ctx context.Context, req *http.Request) error
+
+// Doer performs HTTP requests.
+//
+// The standard http.Client implements this interface.
+type HttpRequestDoer interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
+// Client which conforms to the OpenAPI3 specification for this service.
+type Client struct {
+	// The endpoint of the server conforming to this interface, with scheme,
+	// https://api.deepmap.com for example. This can contain a path relative
+	// to the server, such as https://api.deepmap.com/dev-test, and all the
+	// paths in the swagger spec will be appended to the server.
+	Server string
+
+	// Doer for performing requests, typically a *http.Client with any
+	// customized settings, such as certificate chains.
+	Client HttpRequestDoer
+
+	// A list of callbacks for modifying requests which are generated before sending over
+	// the network.
+	RequestEditors []RequestEditorFn
+}
+
+// ClientOption allows setting custom parameters during construction
+type ClientOption func(*Client) error
+
+// Creates a new Client, with reasonable defaults
+func NewClient(server string, opts ...ClientOption) (*Client, error) {
+	// create a client with sane default values
+	client := Client{
+		Server: server,
+	}
+	// mutate client and add all optional params
+	for _, o := range opts {
+		if err := o(&client); err != nil {
+			return nil, err
+		}
+	}
+	// ensure the server URL always has a trailing slash
+	if !strings.HasSuffix(client.Server, "/") {
+		client.Server += "/"
+	}
+	// create httpClient, if not already present
+	if client.Client == nil {
+		client.Client = &http.Client{}
+	}
+	return &client, nil
+}
+
+// WithHTTPClient allows overriding the default Doer, which is
+// automatically created using http.Client. This is useful for tests.
+func WithHTTPClient(doer HttpRequestDoer) ClientOption {
+	return func(c *Client) error {
+		c.Client = doer
+		return nil
+	}
+}
+
+// WithRequestEditorFn allows setting up a callback function, which will be
+// called right before sending the request. This can be used to mutate the request.
+func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
+	return func(c *Client) error {
+		c.RequestEditors = append(c.RequestEditors, fn)
+		return nil
+	}
+}
+
+// The interface specification for the client above.
+type ClientInterface interface {
+	// ApexchartsTimeline request
+	ApexchartsTimeline(ctx context.Context, params *ApexchartsTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateEquipmentWithBody request with any body
+	CreateEquipmentWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateEquipment(ctx context.Context, body CreateEquipmentJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// Events request
+	Events(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// FinishIntervalWithBody request with any body
+	FinishIntervalWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	FinishInterval(ctx context.Context, body FinishIntervalJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// StartIntervalWithBody request with any body
+	StartIntervalWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	StartInterval(ctx context.Context, body StartIntervalJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CurrentIntervalWithBody request with any body
+	CurrentIntervalWithBody(ctx context.Context, params *CurrentIntervalParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CurrentIntervalsList request
+	CurrentIntervalsList(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AddEquipmentToLineWithBody request with any body
+	AddEquipmentToLineWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	AddEquipmentToLine(ctx context.Context, body AddEquipmentToLineJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateLineWithBody request with any body
+	CreateLineWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateLine(ctx context.Context, body CreateLineJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// MoveEquipmentInLineWithBody request with any body
+	MoveEquipmentInLineWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	MoveEquipmentInLine(ctx context.Context, body MoveEquipmentInLineJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RemoveEquipmentFromLineWithBody request with any body
+	RemoveEquipmentFromLineWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	RemoveEquipmentFromLine(ctx context.Context, body RemoveEquipmentFromLineJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// LinesList request
+	LinesList(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// LineTopology request
+	LineTopology(ctx context.Context, params *LineTopologyParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// IncreaseProductionWithBody request with any body
+	IncreaseProductionWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	IncreaseProduction(ctx context.Context, body IncreaseProductionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateQualificationRuleWithBody request with any body
+	CreateQualificationRuleWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateQualificationRule(ctx context.Context, body CreateQualificationRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// QualifyDowntimeWithBody request with any body
+	QualifyDowntimeWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	QualifyDowntime(ctx context.Context, body QualifyDowntimeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RemoveQualificationRuleWithBody request with any body
+	RemoveQualificationRuleWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	RemoveQualificationRule(ctx context.Context, body RemoveQualificationRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateSpecificationWithBody request with any body
+	CreateSpecificationWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateSpecification(ctx context.Context, body CreateSpecificationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeprecateSpecificationWithBody request with any body
+	DeprecateSpecificationWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	DeprecateSpecification(ctx context.Context, body DeprecateSpecificationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// FinishWorkshiftWithBody request with any body
+	FinishWorkshiftWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	FinishWorkshift(ctx context.Context, body FinishWorkshiftJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// StartWorkshiftWithBody request with any body
+	StartWorkshiftWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	StartWorkshift(ctx context.Context, body StartWorkshiftJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CurrentWorkshift request
+	CurrentWorkshift(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+func (c *Client) ApexchartsTimeline(ctx context.Context, params *ApexchartsTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewApexchartsTimelineRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateEquipmentWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateEquipmentRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateEquipment(ctx context.Context, body CreateEquipmentJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateEquipmentRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) Events(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewEventsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) FinishIntervalWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewFinishIntervalRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) FinishInterval(ctx context.Context, body FinishIntervalJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewFinishIntervalRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) StartIntervalWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewStartIntervalRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) StartInterval(ctx context.Context, body StartIntervalJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewStartIntervalRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CurrentIntervalWithBody(ctx context.Context, params *CurrentIntervalParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCurrentIntervalRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CurrentIntervalsList(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCurrentIntervalsListRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AddEquipmentToLineWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddEquipmentToLineRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AddEquipmentToLine(ctx context.Context, body AddEquipmentToLineJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddEquipmentToLineRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateLineWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateLineRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateLine(ctx context.Context, body CreateLineJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateLineRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) MoveEquipmentInLineWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewMoveEquipmentInLineRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) MoveEquipmentInLine(ctx context.Context, body MoveEquipmentInLineJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewMoveEquipmentInLineRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RemoveEquipmentFromLineWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveEquipmentFromLineRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RemoveEquipmentFromLine(ctx context.Context, body RemoveEquipmentFromLineJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveEquipmentFromLineRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) LinesList(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewLinesListRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) LineTopology(ctx context.Context, params *LineTopologyParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewLineTopologyRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) IncreaseProductionWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewIncreaseProductionRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) IncreaseProduction(ctx context.Context, body IncreaseProductionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewIncreaseProductionRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateQualificationRuleWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateQualificationRuleRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateQualificationRule(ctx context.Context, body CreateQualificationRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateQualificationRuleRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) QualifyDowntimeWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewQualifyDowntimeRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) QualifyDowntime(ctx context.Context, body QualifyDowntimeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewQualifyDowntimeRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RemoveQualificationRuleWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveQualificationRuleRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RemoveQualificationRule(ctx context.Context, body RemoveQualificationRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveQualificationRuleRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateSpecificationWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateSpecificationRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateSpecification(ctx context.Context, body CreateSpecificationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateSpecificationRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeprecateSpecificationWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeprecateSpecificationRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeprecateSpecification(ctx context.Context, body DeprecateSpecificationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeprecateSpecificationRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) FinishWorkshiftWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewFinishWorkshiftRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) FinishWorkshift(ctx context.Context, body FinishWorkshiftJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewFinishWorkshiftRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) StartWorkshiftWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewStartWorkshiftRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) StartWorkshift(ctx context.Context, body StartWorkshiftJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewStartWorkshiftRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CurrentWorkshift(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCurrentWorkshiftRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// NewApexchartsTimelineRequest generates requests for ApexchartsTimeline
+func NewApexchartsTimelineRequest(server string, params *ApexchartsTimelineParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/intervals/queries/apexcharts_timeline")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "workshift_id", runtime.ParamLocationQuery, params.WorkshiftId); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "equipment_id", runtime.ParamLocationQuery, params.EquipmentId); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateEquipmentRequest calls the generic CreateEquipment builder with application/json body
+func NewCreateEquipmentRequest(server string, body CreateEquipmentJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateEquipmentRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateEquipmentRequestWithBody generates requests for CreateEquipment with any type of body
+func NewCreateEquipmentRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/equipment/commands/create")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewEventsRequest generates requests for Events
+func NewEventsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/events")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewFinishIntervalRequest calls the generic FinishInterval builder with application/json body
+func NewFinishIntervalRequest(server string, body FinishIntervalJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewFinishIntervalRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewFinishIntervalRequestWithBody generates requests for FinishInterval with any type of body
+func NewFinishIntervalRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/intervals/commands/finish")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewStartIntervalRequest calls the generic StartInterval builder with application/json body
+func NewStartIntervalRequest(server string, body StartIntervalJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewStartIntervalRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewStartIntervalRequestWithBody generates requests for StartInterval with any type of body
+func NewStartIntervalRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/intervals/commands/start")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCurrentIntervalRequestWithBody generates requests for CurrentInterval with any type of body
+func NewCurrentIntervalRequestWithBody(server string, params *CurrentIntervalParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/intervals/queries/current")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "equipment_id", runtime.ParamLocationQuery, params.EquipmentId); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCurrentIntervalsListRequest generates requests for CurrentIntervalsList
+func NewCurrentIntervalsListRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/intervals/queries/current_list")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewAddEquipmentToLineRequest calls the generic AddEquipmentToLine builder with application/json body
+func NewAddEquipmentToLineRequest(server string, body AddEquipmentToLineJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAddEquipmentToLineRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewAddEquipmentToLineRequestWithBody generates requests for AddEquipmentToLine with any type of body
+func NewAddEquipmentToLineRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/lines/commands/add_equipment")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCreateLineRequest calls the generic CreateLine builder with application/json body
+func NewCreateLineRequest(server string, body CreateLineJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateLineRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateLineRequestWithBody generates requests for CreateLine with any type of body
+func NewCreateLineRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/lines/commands/create")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewMoveEquipmentInLineRequest calls the generic MoveEquipmentInLine builder with application/json body
+func NewMoveEquipmentInLineRequest(server string, body MoveEquipmentInLineJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewMoveEquipmentInLineRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewMoveEquipmentInLineRequestWithBody generates requests for MoveEquipmentInLine with any type of body
+func NewMoveEquipmentInLineRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/lines/commands/move_equipment")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewRemoveEquipmentFromLineRequest calls the generic RemoveEquipmentFromLine builder with application/json body
+func NewRemoveEquipmentFromLineRequest(server string, body RemoveEquipmentFromLineJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRemoveEquipmentFromLineRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewRemoveEquipmentFromLineRequestWithBody generates requests for RemoveEquipmentFromLine with any type of body
+func NewRemoveEquipmentFromLineRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/lines/commands/remove_equipment")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewLinesListRequest generates requests for LinesList
+func NewLinesListRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/lines/queries/list")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewLineTopologyRequest generates requests for LineTopology
+func NewLineTopologyRequest(server string, params *LineTopologyParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/lines/queries/topology")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Id != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "id", runtime.ParamLocationQuery, *params.Id); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewIncreaseProductionRequest calls the generic IncreaseProduction builder with application/json body
+func NewIncreaseProductionRequest(server string, body IncreaseProductionJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewIncreaseProductionRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewIncreaseProductionRequestWithBody generates requests for IncreaseProduction with any type of body
+func NewIncreaseProductionRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/production/commands/increase")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCreateQualificationRuleRequest calls the generic CreateQualificationRule builder with application/json body
+func NewCreateQualificationRuleRequest(server string, body CreateQualificationRuleJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateQualificationRuleRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateQualificationRuleRequestWithBody generates requests for CreateQualificationRule with any type of body
+func NewCreateQualificationRuleRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/qualification/commands/create_rule")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewQualifyDowntimeRequest calls the generic QualifyDowntime builder with application/json body
+func NewQualifyDowntimeRequest(server string, body QualifyDowntimeJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewQualifyDowntimeRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewQualifyDowntimeRequestWithBody generates requests for QualifyDowntime with any type of body
+func NewQualifyDowntimeRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/qualification/commands/qualify")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewRemoveQualificationRuleRequest calls the generic RemoveQualificationRule builder with application/json body
+func NewRemoveQualificationRuleRequest(server string, body RemoveQualificationRuleJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRemoveQualificationRuleRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewRemoveQualificationRuleRequestWithBody generates requests for RemoveQualificationRule with any type of body
+func NewRemoveQualificationRuleRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/qualification/commands/remove_rule")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCreateSpecificationRequest calls the generic CreateSpecification builder with application/json body
+func NewCreateSpecificationRequest(server string, body CreateSpecificationJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateSpecificationRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateSpecificationRequestWithBody generates requests for CreateSpecification with any type of body
+func NewCreateSpecificationRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/specifications/commands/create")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeprecateSpecificationRequest calls the generic DeprecateSpecification builder with application/json body
+func NewDeprecateSpecificationRequest(server string, body DeprecateSpecificationJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewDeprecateSpecificationRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewDeprecateSpecificationRequestWithBody generates requests for DeprecateSpecification with any type of body
+func NewDeprecateSpecificationRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/specifications/commands/deprecate")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewFinishWorkshiftRequest calls the generic FinishWorkshift builder with application/json body
+func NewFinishWorkshiftRequest(server string, body FinishWorkshiftJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewFinishWorkshiftRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewFinishWorkshiftRequestWithBody generates requests for FinishWorkshift with any type of body
+func NewFinishWorkshiftRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/workshifts/commands/finish")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewStartWorkshiftRequest calls the generic StartWorkshift builder with application/json body
+func NewStartWorkshiftRequest(server string, body StartWorkshiftJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewStartWorkshiftRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewStartWorkshiftRequestWithBody generates requests for StartWorkshift with any type of body
+func NewStartWorkshiftRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/workshifts/commands/start")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCurrentWorkshiftRequest generates requests for CurrentWorkshift
+func NewCurrentWorkshiftRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/workshifts/queries/current")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
+	for _, r := range c.RequestEditors {
+		if err := r(ctx, req); err != nil {
+			return err
+		}
+	}
+	for _, r := range additionalEditors {
+		if err := r(ctx, req); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// ClientWithResponses builds on ClientInterface to offer response payloads
+type ClientWithResponses struct {
+	ClientInterface
+}
+
+// NewClientWithResponses creates a new ClientWithResponses, which wraps
+// Client with return type handling
+func NewClientWithResponses(server string, opts ...ClientOption) (*ClientWithResponses, error) {
+	client, err := NewClient(server, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ClientWithResponses{client}, nil
+}
+
+// WithBaseURL overrides the baseURL.
+func WithBaseURL(baseURL string) ClientOption {
+	return func(c *Client) error {
+		newBaseURL, err := url.Parse(baseURL)
+		if err != nil {
+			return err
+		}
+		c.Server = newBaseURL.String()
+		return nil
+	}
+}
+
+// ClientWithResponsesInterface is the interface specification for the client with responses above.
+type ClientWithResponsesInterface interface {
+	// ApexchartsTimelineWithResponse request
+	ApexchartsTimelineWithResponse(ctx context.Context, params *ApexchartsTimelineParams, reqEditors ...RequestEditorFn) (*ApexchartsTimelineResponse, error)
+
+	// CreateEquipmentWithBodyWithResponse request with any body
+	CreateEquipmentWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateEquipmentResponse, error)
+
+	CreateEquipmentWithResponse(ctx context.Context, body CreateEquipmentJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateEquipmentResponse, error)
+
+	// EventsWithResponse request
+	EventsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*EventsResponse, error)
+
+	// FinishIntervalWithBodyWithResponse request with any body
+	FinishIntervalWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*FinishIntervalResponse, error)
+
+	FinishIntervalWithResponse(ctx context.Context, body FinishIntervalJSONRequestBody, reqEditors ...RequestEditorFn) (*FinishIntervalResponse, error)
+
+	// StartIntervalWithBodyWithResponse request with any body
+	StartIntervalWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*StartIntervalResponse, error)
+
+	StartIntervalWithResponse(ctx context.Context, body StartIntervalJSONRequestBody, reqEditors ...RequestEditorFn) (*StartIntervalResponse, error)
+
+	// CurrentIntervalWithBodyWithResponse request with any body
+	CurrentIntervalWithBodyWithResponse(ctx context.Context, params *CurrentIntervalParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CurrentIntervalResponse, error)
+
+	// CurrentIntervalsListWithResponse request
+	CurrentIntervalsListWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CurrentIntervalsListResponse, error)
+
+	// AddEquipmentToLineWithBodyWithResponse request with any body
+	AddEquipmentToLineWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddEquipmentToLineResponse, error)
+
+	AddEquipmentToLineWithResponse(ctx context.Context, body AddEquipmentToLineJSONRequestBody, reqEditors ...RequestEditorFn) (*AddEquipmentToLineResponse, error)
+
+	// CreateLineWithBodyWithResponse request with any body
+	CreateLineWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateLineResponse, error)
+
+	CreateLineWithResponse(ctx context.Context, body CreateLineJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateLineResponse, error)
+
+	// MoveEquipmentInLineWithBodyWithResponse request with any body
+	MoveEquipmentInLineWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*MoveEquipmentInLineResponse, error)
+
+	MoveEquipmentInLineWithResponse(ctx context.Context, body MoveEquipmentInLineJSONRequestBody, reqEditors ...RequestEditorFn) (*MoveEquipmentInLineResponse, error)
+
+	// RemoveEquipmentFromLineWithBodyWithResponse request with any body
+	RemoveEquipmentFromLineWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RemoveEquipmentFromLineResponse, error)
+
+	RemoveEquipmentFromLineWithResponse(ctx context.Context, body RemoveEquipmentFromLineJSONRequestBody, reqEditors ...RequestEditorFn) (*RemoveEquipmentFromLineResponse, error)
+
+	// LinesListWithResponse request
+	LinesListWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LinesListResponse, error)
+
+	// LineTopologyWithResponse request
+	LineTopologyWithResponse(ctx context.Context, params *LineTopologyParams, reqEditors ...RequestEditorFn) (*LineTopologyResponse, error)
+
+	// IncreaseProductionWithBodyWithResponse request with any body
+	IncreaseProductionWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*IncreaseProductionResponse, error)
+
+	IncreaseProductionWithResponse(ctx context.Context, body IncreaseProductionJSONRequestBody, reqEditors ...RequestEditorFn) (*IncreaseProductionResponse, error)
+
+	// CreateQualificationRuleWithBodyWithResponse request with any body
+	CreateQualificationRuleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateQualificationRuleResponse, error)
+
+	CreateQualificationRuleWithResponse(ctx context.Context, body CreateQualificationRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateQualificationRuleResponse, error)
+
+	// QualifyDowntimeWithBodyWithResponse request with any body
+	QualifyDowntimeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*QualifyDowntimeResponse, error)
+
+	QualifyDowntimeWithResponse(ctx context.Context, body QualifyDowntimeJSONRequestBody, reqEditors ...RequestEditorFn) (*QualifyDowntimeResponse, error)
+
+	// RemoveQualificationRuleWithBodyWithResponse request with any body
+	RemoveQualificationRuleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RemoveQualificationRuleResponse, error)
+
+	RemoveQualificationRuleWithResponse(ctx context.Context, body RemoveQualificationRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*RemoveQualificationRuleResponse, error)
+
+	// CreateSpecificationWithBodyWithResponse request with any body
+	CreateSpecificationWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSpecificationResponse, error)
+
+	CreateSpecificationWithResponse(ctx context.Context, body CreateSpecificationJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSpecificationResponse, error)
+
+	// DeprecateSpecificationWithBodyWithResponse request with any body
+	DeprecateSpecificationWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DeprecateSpecificationResponse, error)
+
+	DeprecateSpecificationWithResponse(ctx context.Context, body DeprecateSpecificationJSONRequestBody, reqEditors ...RequestEditorFn) (*DeprecateSpecificationResponse, error)
+
+	// FinishWorkshiftWithBodyWithResponse request with any body
+	FinishWorkshiftWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*FinishWorkshiftResponse, error)
+
+	FinishWorkshiftWithResponse(ctx context.Context, body FinishWorkshiftJSONRequestBody, reqEditors ...RequestEditorFn) (*FinishWorkshiftResponse, error)
+
+	// StartWorkshiftWithBodyWithResponse request with any body
+	StartWorkshiftWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*StartWorkshiftResponse, error)
+
+	StartWorkshiftWithResponse(ctx context.Context, body StartWorkshiftJSONRequestBody, reqEditors ...RequestEditorFn) (*StartWorkshiftResponse, error)
+
+	// CurrentWorkshiftWithResponse request
+	CurrentWorkshiftWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CurrentWorkshiftResponse, error)
+}
+
+type ApexchartsTimelineResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]ApexchartsTimeline
+}
+
+// Status returns HTTPResponse.Status
+func (r ApexchartsTimelineResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ApexchartsTimelineResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateEquipmentResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateEquipmentResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateEquipmentResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type EventsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *MessageEvent
+}
+
+// Status returns HTTPResponse.Status
+func (r EventsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r EventsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type FinishIntervalResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r FinishIntervalResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r FinishIntervalResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type StartIntervalResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r StartIntervalResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r StartIntervalResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CurrentIntervalResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CurrentInterval
+}
+
+// Status returns HTTPResponse.Status
+func (r CurrentIntervalResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CurrentIntervalResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CurrentIntervalsListResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CurrentIntervalsList
+}
+
+// Status returns HTTPResponse.Status
+func (r CurrentIntervalsListResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CurrentIntervalsListResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AddEquipmentToLineResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r AddEquipmentToLineResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AddEquipmentToLineResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateLineResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateLineResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateLineResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type MoveEquipmentInLineResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r MoveEquipmentInLineResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r MoveEquipmentInLineResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type RemoveEquipmentFromLineResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r RemoveEquipmentFromLineResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RemoveEquipmentFromLineResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type LinesListResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *LinesList
+}
+
+// Status returns HTTPResponse.Status
+func (r LinesListResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r LinesListResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type LineTopologyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *LineTopology
+}
+
+// Status returns HTTPResponse.Status
+func (r LineTopologyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r LineTopologyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type IncreaseProductionResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r IncreaseProductionResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r IncreaseProductionResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateQualificationRuleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateQualificationRuleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateQualificationRuleResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type QualifyDowntimeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r QualifyDowntimeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r QualifyDowntimeResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type RemoveQualificationRuleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r RemoveQualificationRuleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RemoveQualificationRuleResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateSpecificationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateSpecificationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateSpecificationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeprecateSpecificationResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r DeprecateSpecificationResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeprecateSpecificationResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type FinishWorkshiftResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r FinishWorkshiftResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r FinishWorkshiftResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type StartWorkshiftResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r StartWorkshiftResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r StartWorkshiftResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CurrentWorkshiftResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CurrentWorkshift
+}
+
+// Status returns HTTPResponse.Status
+func (r CurrentWorkshiftResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CurrentWorkshiftResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ApexchartsTimelineWithResponse request returning *ApexchartsTimelineResponse
+func (c *ClientWithResponses) ApexchartsTimelineWithResponse(ctx context.Context, params *ApexchartsTimelineParams, reqEditors ...RequestEditorFn) (*ApexchartsTimelineResponse, error) {
+	rsp, err := c.ApexchartsTimeline(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseApexchartsTimelineResponse(rsp)
+}
+
+// CreateEquipmentWithBodyWithResponse request with arbitrary body returning *CreateEquipmentResponse
+func (c *ClientWithResponses) CreateEquipmentWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateEquipmentResponse, error) {
+	rsp, err := c.CreateEquipmentWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateEquipmentResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateEquipmentWithResponse(ctx context.Context, body CreateEquipmentJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateEquipmentResponse, error) {
+	rsp, err := c.CreateEquipment(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateEquipmentResponse(rsp)
+}
+
+// EventsWithResponse request returning *EventsResponse
+func (c *ClientWithResponses) EventsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*EventsResponse, error) {
+	rsp, err := c.Events(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseEventsResponse(rsp)
+}
+
+// FinishIntervalWithBodyWithResponse request with arbitrary body returning *FinishIntervalResponse
+func (c *ClientWithResponses) FinishIntervalWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*FinishIntervalResponse, error) {
+	rsp, err := c.FinishIntervalWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseFinishIntervalResponse(rsp)
+}
+
+func (c *ClientWithResponses) FinishIntervalWithResponse(ctx context.Context, body FinishIntervalJSONRequestBody, reqEditors ...RequestEditorFn) (*FinishIntervalResponse, error) {
+	rsp, err := c.FinishInterval(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseFinishIntervalResponse(rsp)
+}
+
+// StartIntervalWithBodyWithResponse request with arbitrary body returning *StartIntervalResponse
+func (c *ClientWithResponses) StartIntervalWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*StartIntervalResponse, error) {
+	rsp, err := c.StartIntervalWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseStartIntervalResponse(rsp)
+}
+
+func (c *ClientWithResponses) StartIntervalWithResponse(ctx context.Context, body StartIntervalJSONRequestBody, reqEditors ...RequestEditorFn) (*StartIntervalResponse, error) {
+	rsp, err := c.StartInterval(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseStartIntervalResponse(rsp)
+}
+
+// CurrentIntervalWithBodyWithResponse request with arbitrary body returning *CurrentIntervalResponse
+func (c *ClientWithResponses) CurrentIntervalWithBodyWithResponse(ctx context.Context, params *CurrentIntervalParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CurrentIntervalResponse, error) {
+	rsp, err := c.CurrentIntervalWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCurrentIntervalResponse(rsp)
+}
+
+// CurrentIntervalsListWithResponse request returning *CurrentIntervalsListResponse
+func (c *ClientWithResponses) CurrentIntervalsListWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CurrentIntervalsListResponse, error) {
+	rsp, err := c.CurrentIntervalsList(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCurrentIntervalsListResponse(rsp)
+}
+
+// AddEquipmentToLineWithBodyWithResponse request with arbitrary body returning *AddEquipmentToLineResponse
+func (c *ClientWithResponses) AddEquipmentToLineWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddEquipmentToLineResponse, error) {
+	rsp, err := c.AddEquipmentToLineWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddEquipmentToLineResponse(rsp)
+}
+
+func (c *ClientWithResponses) AddEquipmentToLineWithResponse(ctx context.Context, body AddEquipmentToLineJSONRequestBody, reqEditors ...RequestEditorFn) (*AddEquipmentToLineResponse, error) {
+	rsp, err := c.AddEquipmentToLine(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddEquipmentToLineResponse(rsp)
+}
+
+// CreateLineWithBodyWithResponse request with arbitrary body returning *CreateLineResponse
+func (c *ClientWithResponses) CreateLineWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateLineResponse, error) {
+	rsp, err := c.CreateLineWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateLineResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateLineWithResponse(ctx context.Context, body CreateLineJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateLineResponse, error) {
+	rsp, err := c.CreateLine(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateLineResponse(rsp)
+}
+
+// MoveEquipmentInLineWithBodyWithResponse request with arbitrary body returning *MoveEquipmentInLineResponse
+func (c *ClientWithResponses) MoveEquipmentInLineWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*MoveEquipmentInLineResponse, error) {
+	rsp, err := c.MoveEquipmentInLineWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseMoveEquipmentInLineResponse(rsp)
+}
+
+func (c *ClientWithResponses) MoveEquipmentInLineWithResponse(ctx context.Context, body MoveEquipmentInLineJSONRequestBody, reqEditors ...RequestEditorFn) (*MoveEquipmentInLineResponse, error) {
+	rsp, err := c.MoveEquipmentInLine(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseMoveEquipmentInLineResponse(rsp)
+}
+
+// RemoveEquipmentFromLineWithBodyWithResponse request with arbitrary body returning *RemoveEquipmentFromLineResponse
+func (c *ClientWithResponses) RemoveEquipmentFromLineWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RemoveEquipmentFromLineResponse, error) {
+	rsp, err := c.RemoveEquipmentFromLineWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRemoveEquipmentFromLineResponse(rsp)
+}
+
+func (c *ClientWithResponses) RemoveEquipmentFromLineWithResponse(ctx context.Context, body RemoveEquipmentFromLineJSONRequestBody, reqEditors ...RequestEditorFn) (*RemoveEquipmentFromLineResponse, error) {
+	rsp, err := c.RemoveEquipmentFromLine(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRemoveEquipmentFromLineResponse(rsp)
+}
+
+// LinesListWithResponse request returning *LinesListResponse
+func (c *ClientWithResponses) LinesListWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LinesListResponse, error) {
+	rsp, err := c.LinesList(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseLinesListResponse(rsp)
+}
+
+// LineTopologyWithResponse request returning *LineTopologyResponse
+func (c *ClientWithResponses) LineTopologyWithResponse(ctx context.Context, params *LineTopologyParams, reqEditors ...RequestEditorFn) (*LineTopologyResponse, error) {
+	rsp, err := c.LineTopology(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseLineTopologyResponse(rsp)
+}
+
+// IncreaseProductionWithBodyWithResponse request with arbitrary body returning *IncreaseProductionResponse
+func (c *ClientWithResponses) IncreaseProductionWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*IncreaseProductionResponse, error) {
+	rsp, err := c.IncreaseProductionWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseIncreaseProductionResponse(rsp)
+}
+
+func (c *ClientWithResponses) IncreaseProductionWithResponse(ctx context.Context, body IncreaseProductionJSONRequestBody, reqEditors ...RequestEditorFn) (*IncreaseProductionResponse, error) {
+	rsp, err := c.IncreaseProduction(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseIncreaseProductionResponse(rsp)
+}
+
+// CreateQualificationRuleWithBodyWithResponse request with arbitrary body returning *CreateQualificationRuleResponse
+func (c *ClientWithResponses) CreateQualificationRuleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateQualificationRuleResponse, error) {
+	rsp, err := c.CreateQualificationRuleWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateQualificationRuleResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateQualificationRuleWithResponse(ctx context.Context, body CreateQualificationRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateQualificationRuleResponse, error) {
+	rsp, err := c.CreateQualificationRule(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateQualificationRuleResponse(rsp)
+}
+
+// QualifyDowntimeWithBodyWithResponse request with arbitrary body returning *QualifyDowntimeResponse
+func (c *ClientWithResponses) QualifyDowntimeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*QualifyDowntimeResponse, error) {
+	rsp, err := c.QualifyDowntimeWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseQualifyDowntimeResponse(rsp)
+}
+
+func (c *ClientWithResponses) QualifyDowntimeWithResponse(ctx context.Context, body QualifyDowntimeJSONRequestBody, reqEditors ...RequestEditorFn) (*QualifyDowntimeResponse, error) {
+	rsp, err := c.QualifyDowntime(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseQualifyDowntimeResponse(rsp)
+}
+
+// RemoveQualificationRuleWithBodyWithResponse request with arbitrary body returning *RemoveQualificationRuleResponse
+func (c *ClientWithResponses) RemoveQualificationRuleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RemoveQualificationRuleResponse, error) {
+	rsp, err := c.RemoveQualificationRuleWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRemoveQualificationRuleResponse(rsp)
+}
+
+func (c *ClientWithResponses) RemoveQualificationRuleWithResponse(ctx context.Context, body RemoveQualificationRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*RemoveQualificationRuleResponse, error) {
+	rsp, err := c.RemoveQualificationRule(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRemoveQualificationRuleResponse(rsp)
+}
+
+// CreateSpecificationWithBodyWithResponse request with arbitrary body returning *CreateSpecificationResponse
+func (c *ClientWithResponses) CreateSpecificationWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSpecificationResponse, error) {
+	rsp, err := c.CreateSpecificationWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateSpecificationResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateSpecificationWithResponse(ctx context.Context, body CreateSpecificationJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSpecificationResponse, error) {
+	rsp, err := c.CreateSpecification(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateSpecificationResponse(rsp)
+}
+
+// DeprecateSpecificationWithBodyWithResponse request with arbitrary body returning *DeprecateSpecificationResponse
+func (c *ClientWithResponses) DeprecateSpecificationWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DeprecateSpecificationResponse, error) {
+	rsp, err := c.DeprecateSpecificationWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeprecateSpecificationResponse(rsp)
+}
+
+func (c *ClientWithResponses) DeprecateSpecificationWithResponse(ctx context.Context, body DeprecateSpecificationJSONRequestBody, reqEditors ...RequestEditorFn) (*DeprecateSpecificationResponse, error) {
+	rsp, err := c.DeprecateSpecification(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeprecateSpecificationResponse(rsp)
+}
+
+// FinishWorkshiftWithBodyWithResponse request with arbitrary body returning *FinishWorkshiftResponse
+func (c *ClientWithResponses) FinishWorkshiftWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*FinishWorkshiftResponse, error) {
+	rsp, err := c.FinishWorkshiftWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseFinishWorkshiftResponse(rsp)
+}
+
+func (c *ClientWithResponses) FinishWorkshiftWithResponse(ctx context.Context, body FinishWorkshiftJSONRequestBody, reqEditors ...RequestEditorFn) (*FinishWorkshiftResponse, error) {
+	rsp, err := c.FinishWorkshift(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseFinishWorkshiftResponse(rsp)
+}
+
+// StartWorkshiftWithBodyWithResponse request with arbitrary body returning *StartWorkshiftResponse
+func (c *ClientWithResponses) StartWorkshiftWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*StartWorkshiftResponse, error) {
+	rsp, err := c.StartWorkshiftWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseStartWorkshiftResponse(rsp)
+}
+
+func (c *ClientWithResponses) StartWorkshiftWithResponse(ctx context.Context, body StartWorkshiftJSONRequestBody, reqEditors ...RequestEditorFn) (*StartWorkshiftResponse, error) {
+	rsp, err := c.StartWorkshift(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseStartWorkshiftResponse(rsp)
+}
+
+// CurrentWorkshiftWithResponse request returning *CurrentWorkshiftResponse
+func (c *ClientWithResponses) CurrentWorkshiftWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CurrentWorkshiftResponse, error) {
+	rsp, err := c.CurrentWorkshift(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCurrentWorkshiftResponse(rsp)
+}
+
+// ParseApexchartsTimelineResponse parses an HTTP response from a ApexchartsTimelineWithResponse call
+func ParseApexchartsTimelineResponse(rsp *http.Response) (*ApexchartsTimelineResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ApexchartsTimelineResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []ApexchartsTimeline
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateEquipmentResponse parses an HTTP response from a CreateEquipmentWithResponse call
+func ParseCreateEquipmentResponse(rsp *http.Response) (*CreateEquipmentResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateEquipmentResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseEventsResponse parses an HTTP response from a EventsWithResponse call
+func ParseEventsResponse(rsp *http.Response) (*EventsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &EventsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest MessageEvent
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseFinishIntervalResponse parses an HTTP response from a FinishIntervalWithResponse call
+func ParseFinishIntervalResponse(rsp *http.Response) (*FinishIntervalResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &FinishIntervalResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseStartIntervalResponse parses an HTTP response from a StartIntervalWithResponse call
+func ParseStartIntervalResponse(rsp *http.Response) (*StartIntervalResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &StartIntervalResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseCurrentIntervalResponse parses an HTTP response from a CurrentIntervalWithResponse call
+func ParseCurrentIntervalResponse(rsp *http.Response) (*CurrentIntervalResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CurrentIntervalResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CurrentInterval
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCurrentIntervalsListResponse parses an HTTP response from a CurrentIntervalsListWithResponse call
+func ParseCurrentIntervalsListResponse(rsp *http.Response) (*CurrentIntervalsListResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CurrentIntervalsListResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CurrentIntervalsList
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAddEquipmentToLineResponse parses an HTTP response from a AddEquipmentToLineWithResponse call
+func ParseAddEquipmentToLineResponse(rsp *http.Response) (*AddEquipmentToLineResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AddEquipmentToLineResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseCreateLineResponse parses an HTTP response from a CreateLineWithResponse call
+func ParseCreateLineResponse(rsp *http.Response) (*CreateLineResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateLineResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseMoveEquipmentInLineResponse parses an HTTP response from a MoveEquipmentInLineWithResponse call
+func ParseMoveEquipmentInLineResponse(rsp *http.Response) (*MoveEquipmentInLineResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &MoveEquipmentInLineResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseRemoveEquipmentFromLineResponse parses an HTTP response from a RemoveEquipmentFromLineWithResponse call
+func ParseRemoveEquipmentFromLineResponse(rsp *http.Response) (*RemoveEquipmentFromLineResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RemoveEquipmentFromLineResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseLinesListResponse parses an HTTP response from a LinesListWithResponse call
+func ParseLinesListResponse(rsp *http.Response) (*LinesListResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &LinesListResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest LinesList
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseLineTopologyResponse parses an HTTP response from a LineTopologyWithResponse call
+func ParseLineTopologyResponse(rsp *http.Response) (*LineTopologyResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &LineTopologyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest LineTopology
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseIncreaseProductionResponse parses an HTTP response from a IncreaseProductionWithResponse call
+func ParseIncreaseProductionResponse(rsp *http.Response) (*IncreaseProductionResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &IncreaseProductionResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseCreateQualificationRuleResponse parses an HTTP response from a CreateQualificationRuleWithResponse call
+func ParseCreateQualificationRuleResponse(rsp *http.Response) (*CreateQualificationRuleResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateQualificationRuleResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseQualifyDowntimeResponse parses an HTTP response from a QualifyDowntimeWithResponse call
+func ParseQualifyDowntimeResponse(rsp *http.Response) (*QualifyDowntimeResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &QualifyDowntimeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseRemoveQualificationRuleResponse parses an HTTP response from a RemoveQualificationRuleWithResponse call
+func ParseRemoveQualificationRuleResponse(rsp *http.Response) (*RemoveQualificationRuleResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RemoveQualificationRuleResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseCreateSpecificationResponse parses an HTTP response from a CreateSpecificationWithResponse call
+func ParseCreateSpecificationResponse(rsp *http.Response) (*CreateSpecificationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateSpecificationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseDeprecateSpecificationResponse parses an HTTP response from a DeprecateSpecificationWithResponse call
+func ParseDeprecateSpecificationResponse(rsp *http.Response) (*DeprecateSpecificationResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeprecateSpecificationResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseFinishWorkshiftResponse parses an HTTP response from a FinishWorkshiftWithResponse call
+func ParseFinishWorkshiftResponse(rsp *http.Response) (*FinishWorkshiftResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &FinishWorkshiftResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseStartWorkshiftResponse parses an HTTP response from a StartWorkshiftWithResponse call
+func ParseStartWorkshiftResponse(rsp *http.Response) (*StartWorkshiftResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &StartWorkshiftResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseCurrentWorkshiftResponse parses an HTTP response from a CurrentWorkshiftWithResponse call
+func ParseCurrentWorkshiftResponse(rsp *http.Response) (*CurrentWorkshiftResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CurrentWorkshiftResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CurrentWorkshift
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// ApexchartsEquipmentTimeline
+	// (GET /api/intervals/queries/apexcharts_timeline)
+	ApexchartsTimeline(w http.ResponseWriter, r *http.Request, params ApexchartsTimelineParams)
 	// CreateEquipment
 	// (POST /equipment/commands/create)
 	CreateEquipment(w http.ResponseWriter, r *http.Request)
@@ -1031,6 +3893,56 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// ApexchartsTimeline operation middleware
+func (siw *ServerInterfaceWrapper) ApexchartsTimeline(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ApexchartsTimelineParams
+
+	// ------------- Required query parameter "workshift_id" -------------
+
+	if paramValue := r.URL.Query().Get("workshift_id"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "workshift_id"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "workshift_id", r.URL.Query(), &params.WorkshiftId)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "workshift_id", Err: err})
+		return
+	}
+
+	// ------------- Required query parameter "equipment_id" -------------
+
+	if paramValue := r.URL.Query().Get("equipment_id"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "equipment_id"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "equipment_id", r.URL.Query(), &params.EquipmentId)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "equipment_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ApexchartsTimeline(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
 
 // CreateEquipment operation middleware
 func (siw *ServerInterfaceWrapper) CreateEquipment(w http.ResponseWriter, r *http.Request) {
@@ -1494,6 +4406,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
+	m.HandleFunc("GET "+options.BaseURL+"/api/intervals/queries/apexcharts_timeline", wrapper.ApexchartsTimeline)
 	m.HandleFunc("POST "+options.BaseURL+"/equipment/commands/create", wrapper.CreateEquipment)
 	m.HandleFunc("GET "+options.BaseURL+"/events", wrapper.Events)
 	m.HandleFunc("POST "+options.BaseURL+"/intervals/commands/finish", wrapper.FinishInterval)

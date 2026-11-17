@@ -6,13 +6,14 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/oee/',
   plugins: [
     vue(),
     vueDevTools(),
   ],
   server: {
     proxy: {
-      "/api": {target: "http://localhost:8880"}
+      "/oee/api": {target: "http://localhost:8880"}
     }
   },
   resolve: {

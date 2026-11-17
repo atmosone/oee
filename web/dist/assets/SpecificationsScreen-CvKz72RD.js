@@ -1,0 +1,1 @@
+import{C as e,a as t,d as n,i as r,l as i,u as a,x as o}from"./index-Dxy-u89Y.js";var s={name:`SpecificationsScreen`};function c(r,s,c,l,u,d){let f=e(`router-view`);return o(),i(t,null,[s[0]||=a(` Specifications Screen `,-1),n(f)],64)}var l=r(s,[[`render`,c]]);export{l as default};

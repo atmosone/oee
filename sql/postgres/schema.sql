@@ -45,13 +45,13 @@ CREATE TABLE IF NOT EXISTS lines_equipment (
     line_id TEXT NOT NULL REFERENCES lines(id),
     equipment_id TEXT NOT NULL REFERENCES equipment(id),
     position INTEGER NOT NULL,
-    CONSTRAINT unique_line_equipment_idx UNIQUE (line_id, equipment_id)
+    PRIMARY KEY (line_id, equipment_id)
 );
 
 CREATE TABLE IF NOT EXISTS qualification_rules (
     equipment_id TEXT NOT NULL REFERENCES equipment(id),
     specification_id TEXT NOT NULL REFERENCES specifications(id),
-    CONSTRAINT unique_qualification_rule_idx UNIQUE (equipment_id, specification_id)
+    PRIMARY KEY (equipment_id, specification_id)
 );
 
 CREATE TABLE IF NOT EXISTS downtimes_qualifications (
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS workshifts_intervals (
     workshift_id TEXT NOT NULL REFERENCES workshifts(id),
     equipment_id TEXT NOT NULL REFERENCES equipment(id),
     interval_id TEXT NOT NULL REFERENCES intervals(id),
-    CONSTRAINT unique_workshift_interval_idx UNIQUE (workshift_id, interval_id)
+    PRIMARY KEY (workshift_id, interval_id)
 );
 
 CREATE INDEX IF NOT EXISTS workshift_equipment_intervals_idx 

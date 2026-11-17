@@ -184,46 +184,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/downtimes/commands/start": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * StartDowntime
-         * @description Starts new Downtime
-         */
-        post: operations["start_downtime"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/downtimes/commands/finish": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * FinishDowntime
-         * @description Finish Downtime
-         */
-        post: operations["finish_downtime"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/qualification/commands/create_rule": {
         parameters: {
             query?: never;
@@ -284,6 +244,63 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/intervals/commands/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * StartInterval
+         * @description Starts new Worktime
+         */
+        post: operations["start_interval"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/intervals/commands/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * FinishInterval
+         * @description Finishes active Interval
+         */
+        post: operations["finish_interval"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/production/commands/increase": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** IncreaseProduction */
+        post: operations["increase_production"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/events": {
         parameters: {
             query?: never;
@@ -296,26 +313,6 @@ export interface paths {
          * @description Event Stream
          */
         get: operations["events"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/lines/queries/topology": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * LineTopology
-         * @description Line topology query
-         */
-        get: operations["line_topology"];
         put?: never;
         post?: never;
         delete?: never;
@@ -344,26 +341,107 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/lines/queries/topology": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * LineTopology
+         * @description Line topology query
+         */
+        get: operations["line_topology"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/workshifts/queries/current": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * CurrentWorkshift
+         * @description Returns current workshift
+         */
+        get: operations["current_workshift"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/intervals/queries/current": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * CurrentInterval
+         * @description Returns current equipment interval
+         */
+        get: operations["current_interval"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/intervals/queries/current_list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * CurrentIntervalsList
+         * @description Returns current intervals list
+         */
+        get: operations["current_intervals_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/intervals/queries/apexcharts_timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** ApexchartsEquipmentTimeline */
+        get: operations["apexcharts_timeline"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** @description Equipment id */
-        EquipmentID: string;
-        /** @description Equipment name */
-        EquipmentName: string;
-        /** @description Equipment category */
-        EquipmentCategory: string;
-        /** @description Line id */
-        LineID: string;
-        /** @description Line name */
-        LineName: string;
-        /** @description Specification id */
-        SpecificationID: string;
-        /** @description Specification code */
-        SpecificationCode: string;
-        /** @description Specification description */
-        SpecificationDescription: string;
         /** @description Command to create equipment */
         CreateEquipmentCommand: {
             /** @description Equipment id */
@@ -373,6 +451,12 @@ export interface components {
             /** @description Equipment category */
             category: components["schemas"]["EquipmentCategory"];
         };
+        /** @description Equipment id */
+        EquipmentID: string;
+        /** @description Equipment name */
+        EquipmentName: string;
+        /** @description Equipment category */
+        EquipmentCategory: string;
         /** @description Command to create line */
         CreateLineCommand: {
             /** @description Line id */
@@ -380,15 +464,10 @@ export interface components {
             /** @description Line name */
             name: components["schemas"]["LineName"];
         };
-        /** @description Command to create specification */
-        CreateSpecificationCommand: {
-            /** @description Specification id */
-            id: components["schemas"]["SpecificationID"];
-            /** @description Specification code */
-            code: components["schemas"]["SpecificationCode"];
-            /** @description Specification description */
-            description: components["schemas"]["SpecificationDescription"];
-        };
+        /** @description Line id */
+        LineID: string;
+        /** @description Line name */
+        LineName: string;
         /** @description Command to add equipment to line */
         AddEquipmentToLineCommand: {
             /** @description Line id */
@@ -415,6 +494,21 @@ export interface components {
             /** @description Equipment id */
             equipment_id: components["schemas"]["EquipmentID"];
         };
+        /** @description Command to create specification */
+        CreateSpecificationCommand: {
+            /** @description Specification id */
+            id: components["schemas"]["SpecificationID"];
+            /** @description Specification code */
+            code: components["schemas"]["SpecificationCode"];
+            /** @description Specification description */
+            description: components["schemas"]["SpecificationDescription"];
+        };
+        /** @description Specification id */
+        SpecificationID: string;
+        /** @description Specification code */
+        SpecificationCode: string;
+        /** @description Specification description */
+        SpecificationDescription: string;
         /** @description Command to deprecate specification */
         DeprecateSpecificationCommand: {
             /** @description Specification id */
@@ -432,27 +526,17 @@ export interface components {
              */
             started_at: string;
         };
+        /** @description Workshift id */
+        WorkshiftID: string;
+        /** @description Workshift name */
+        WorkshiftName: string;
         /** @description Command to finish workshift */
         FinishWorkshiftCommand: {
-            /** @description Workshift id */
-            id: components["schemas"]["WorkshiftID"];
             /**
              * Format: date-time
              * @description Workshift finish time
              */
             finished_at: string;
-        };
-        /** @description Command to start downtime */
-        StartDowntimeCommand: {
-            /** @description Downtime id */
-            id: components["schemas"]["DowntimeID"];
-            /** @description Equipment id */
-            equipment_id: components["schemas"]["EquipmentID"];
-            /**
-             * Format: date-time
-             * @description Downtime start time
-             */
-            started_at: string;
         };
         /** @description Command to create qualification rule */
         CreateQualificationRuleCommand: {
@@ -471,29 +555,70 @@ export interface components {
         /** @description Command to qualify downtime */
         QualifyDowntimeCommand: {
             /** @description Downtime id */
-            downtime_id: components["schemas"]["DowntimeID"];
+            downtime_id: components["schemas"]["IntervalID"];
             /** @description Specification id */
             specification_id: components["schemas"]["SpecificationID"];
             /** @description Qualification comment */
             comment: components["schemas"]["QualificationComment"];
         };
-        /** @description Workshift id */
-        WorkshiftID: string;
-        /** @description Workshift name */
-        WorkshiftName: string;
-        /** @enum {string} */
-        WorkshiftStatus: "active" | "finished";
-        /** @description Downtime id */
-        DowntimeID: string;
-        /** @enum {string} */
-        DowntimeStatus: "active" | "finished";
+        /** @description Worktime id */
+        IntervalID: string;
         /** @description Qualification comment */
         QualificationComment: string;
+        /** @description Command to start worktime */
+        StartIntervalCommand: {
+            /** @description Started worktime id */
+            id: components["schemas"]["IntervalID"];
+            /** @description Started worktime equipment id */
+            equipment_id: components["schemas"]["EquipmentID"];
+            /** @description Started interval category */
+            category: components["schemas"]["IntervalCategory"];
+            /**
+             * Format: date-time
+             * @description Worktime start time
+             */
+            started_at: string;
+        };
         /**
-         * @description Event type
+         * @description Interval category
          * @enum {string}
          */
-        EventType: "equipment_created" | "line_created" | "equipment_added_to_line" | "equipment_moved_in_line" | "equipment_removed_from_line" | "qualification_rule_created" | "qualification_rule_removed" | "downtime_qualified" | "specification_created" | "specification_deprecated" | "workshift_started" | "workshift_finished" | "downtime_started" | "downtime_finished";
+        IntervalCategory: "downtime" | "worktime";
+        /** @description Command to finish interval */
+        FinishIntervalCommand: {
+            /** @description Finished interval equipment id */
+            equipment_id: components["schemas"]["EquipmentID"];
+            /**
+             * Format: date-time
+             * @description Interval finished at
+             */
+            finished_at: string;
+        };
+        /** @description Command to increase production */
+        IncreaseProductionCommand: {
+            /** @description Increased production equipment id */
+            equipment_id: components["schemas"]["EquipmentID"];
+            /** @description Increased production category */
+            category: components["schemas"]["ProductionCategory"];
+            /** @description Increased production amount */
+            amount: components["schemas"]["ProductionAmount"];
+        };
+        /**
+         * @description Production category
+         * @enum {string}
+         */
+        ProductionCategory: "good" | "defect";
+        /** @description Production amount */
+        ProductionAmount: number;
+        /** @description Event Stream Message */
+        MessageEvent: {
+            /** @description Event id */
+            id?: string;
+            /** @description Event data */
+            data: components["schemas"]["EquipmentCreatedEvent"] | components["schemas"]["LineCreatedEvent"] | components["schemas"]["EquipmentAddedToLineEvent"] | components["schemas"]["EquipmentMovedInLineEvent"] | components["schemas"]["EquipmentRemovedFromLineEvent"] | components["schemas"]["SpecificationCreatedEvent"] | components["schemas"]["SpecificationDeprecatedEvent"] | components["schemas"]["WorkshiftStartedEvent"] | components["schemas"]["WorkshiftFinishedEvent"] | components["schemas"]["QualificationRuleCreatedEvent"] | components["schemas"]["QualificationRuleRemovedEvent"] | components["schemas"]["DowntimeQualifiedEvent"] | components["schemas"]["IntervalStartedEvent"] | components["schemas"]["IntervalFinishedAt"];
+            /** @description Event type */
+            event: components["schemas"]["EventType"];
+        };
         /** @description Equipment created event */
         EquipmentCreatedEvent: {
             /** @description Created equipment id */
@@ -581,34 +706,6 @@ export interface components {
             /** @description Finished workshift duration (ns) */
             duration: number;
         };
-        /** @description Downtime started event */
-        DowntimeStartedEvent: {
-            /** @description Started downtime id */
-            id: components["schemas"]["DowntimeID"];
-            /** @description Started downtime equipment id */
-            equipment_id: components["schemas"]["EquipmentID"];
-            /** @description Started downtime status */
-            status: components["schemas"]["DowntimeStatus"];
-            /**
-             * Format: date-time
-             * @description Downtime started at
-             */
-            started_at: string;
-        };
-        /** @description Downtime finished event */
-        DowntimeFinishedEvent: {
-            /** @description Finished downtime id */
-            id: components["schemas"]["DowntimeID"];
-            /** @description Finished downtime status */
-            status: components["schemas"]["DowntimeStatus"];
-            /**
-             * Format: date-time
-             * @description Downtime finished at
-             */
-            finished_at: string;
-            /** @description Finished downtime duration (ns) */
-            duration: number;
-        };
         /** @description Qualification rule created event */
         QualificationRuleCreatedEvent: {
             /** @description Created qualification rule equipment id */
@@ -626,21 +723,69 @@ export interface components {
         /** @description Downtime qualified event */
         DowntimeQualifiedEvent: {
             /** @description Qualified downtime id */
-            downtime_id: components["schemas"]["DowntimeID"];
+            downtime_id: unknown;
             /** @description Qualified downtime specification id */
             specification_id: components["schemas"]["SpecificationID"];
             /** @description Qualified downtime comment */
             comment: components["schemas"]["QualificationComment"];
         };
-        /** @description Event Stream Message */
-        MessageEvent: {
-            /** @description Event id */
-            id?: string;
-            /** @description Event data */
-            data: components["schemas"]["EquipmentCreatedEvent"] | components["schemas"]["LineCreatedEvent"] | components["schemas"]["EquipmentAddedToLineEvent"] | components["schemas"]["EquipmentMovedInLineEvent"] | components["schemas"]["EquipmentRemovedFromLineEvent"] | components["schemas"]["SpecificationCreatedEvent"] | components["schemas"]["SpecificationDeprecatedEvent"] | components["schemas"]["WorkshiftStartedEvent"] | components["schemas"]["WorkshiftFinishedEvent"] | components["schemas"]["DowntimeStartedEvent"] | components["schemas"]["DowntimeFinishedEvent"] | components["schemas"]["QualificationRuleCreatedEvent"] | components["schemas"]["QualificationRuleRemovedEvent"] | components["schemas"]["DowntimeQualifiedEvent"];
-            /** @description Event type */
-            event: components["schemas"]["EventType"];
+        /** @description Interval started event */
+        IntervalStartedEvent: {
+            /** @description Started interval id */
+            id: components["schemas"]["IntervalID"];
+            /** @description Started interval equipment id */
+            equipment_id: components["schemas"]["EquipmentID"];
+            /** @description Started interval status */
+            status: components["schemas"]["IntervalStatus"];
+            /** @description Started interval category */
+            category: components["schemas"]["IntervalCategory"];
+            /**
+             * Format: date-time
+             * @description Interval started at
+             */
+            started_at: string;
         };
+        /** @description Interval finished event */
+        IntervalFinishedAt: {
+            /** @description Finished interval id */
+            id: components["schemas"]["IntervalID"];
+            /** @description Finished interval equipment id */
+            equipment_id: components["schemas"]["EquipmentID"];
+            /** @description Finished interval status */
+            status: components["schemas"]["IntervalStatus"];
+            /** @description Finished interval category */
+            category: components["schemas"]["IntervalCategory"];
+            /**
+             * Format: date-time
+             * @description Interval  finished at
+             */
+            finished_at: string;
+            /** @description Finished interval duration */
+            duration: number;
+        };
+        /**
+         * @description Event type
+         * @enum {string}
+         */
+        EventType: "equipment_created" | "line_created" | "equipment_added_to_line" | "equipment_moved_in_line" | "equipment_removed_from_line" | "qualification_rule_created" | "qualification_rule_removed" | "downtime_qualified" | "specification_created" | "specification_deprecated" | "workshift_started" | "workshift_finished" | "downtime_started" | "downtime_finished";
+        /** @enum {string} */
+        WorkshiftStatus: "active" | "finished";
+        /**
+         * @description Worktime status
+         * @enum {string}
+         */
+        IntervalStatus: "active" | "finished";
+        /** @description Lines list */
+        LinesList: components["schemas"]["LinesListItem"][];
+        /** @description Lines list item */
+        LinesListItem: {
+            /** @description Line id */
+            id: components["schemas"]["LineID"];
+            /** @description Line name */
+            name: components["schemas"]["LineName"];
+        };
+        /** @description Line topology */
+        LineTopology: components["schemas"]["LineTopologyItem"][];
         /** @description LineTopologyItem */
         LineTopologyItem: {
             /** @description Equipment id */
@@ -650,17 +795,48 @@ export interface components {
             /** @description Equipment category */
             category: components["schemas"]["EquipmentCategory"];
         };
-        /** @description Line topology */
-        LineTopology: components["schemas"]["LineTopologyItem"][];
-        /** @description Lines list item */
-        LinesListItem: {
-            /** @description Line id */
-            id: components["schemas"]["LineID"];
-            /** @description Line name */
-            name: components["schemas"]["LineName"];
+        /** @description Current workshift */
+        CurrentWorkshift: {
+            /** @description Current workshift id */
+            id: components["schemas"]["WorkshiftID"];
+            /** @description Current workshift name */
+            name: components["schemas"]["WorkshiftName"];
+            /**
+             * Format: date-time
+             * @description Current workshift start time
+             */
+            started_at: string;
         };
-        /** @description Lines list */
-        LinesList: components["schemas"]["LinesListItem"][];
+        /** @description Current interval */
+        CurrentInterval: {
+            /** @description Current interval id */
+            id: components["schemas"]["IntervalID"];
+            /** @description Current interval equipment id */
+            equipment_id: components["schemas"]["EquipmentID"];
+            /** @description Current interval category */
+            category: components["schemas"]["IntervalCategory"];
+            /**
+             * Format: date-time
+             * @description Current interval start time
+             */
+            started_at: string;
+        };
+        /** @description Current intervals list */
+        CurrentIntervalsList: components["schemas"]["CurrentInterval"][];
+        ApexchartsTimeline: {
+            /** @description Timeline name */
+            name: components["schemas"]["IntervalCategory"];
+            /** @description Timeline data */
+            data: components["schemas"]["ApexchartsTimelineBar"][];
+        };
+        ApexchartsTimelineBar: {
+            /** @description Interval id */
+            id: components["schemas"]["IntervalID"];
+            /** @description Bar category */
+            x: components["schemas"]["EquipmentName"];
+            /** @description Bar interval */
+            y: number[];
+        };
     };
     responses: never;
     parameters: never;
@@ -859,44 +1035,6 @@ export interface operations {
             };
         };
     };
-    start_downtime: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["StartDowntimeCommand"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    finish_downtime: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     create_qualification_rule: {
         parameters: {
             query?: never;
@@ -960,6 +1098,69 @@ export interface operations {
             };
         };
     };
+    start_interval: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartIntervalCommand"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    finish_interval: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FinishIntervalCommand"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    increase_production: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IncreaseProductionCommand"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     events: {
         parameters: {
             query?: never;
@@ -975,6 +1176,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MessageEvent"];
+                };
+            };
+        };
+    };
+    lines_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LinesList"];
                 };
             };
         };
@@ -1001,7 +1221,7 @@ export interface operations {
             };
         };
     };
-    lines_list: {
+    current_workshift: {
         parameters: {
             query?: never;
             header?: never;
@@ -1015,7 +1235,92 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["LinesList"];
+                    "application/json": components["schemas"]["CurrentWorkshift"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": unknown;
+                };
+            };
+        };
+    };
+    current_interval: {
+        parameters: {
+            query: {
+                /** @description Equipment id */
+                equipment_id: components["schemas"]["EquipmentID"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": Record<string, never>;
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CurrentInterval"];
+                };
+            };
+        };
+    };
+    current_intervals_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CurrentIntervalsList"];
+                };
+            };
+        };
+    };
+    apexcharts_timeline: {
+        parameters: {
+            query: {
+                /** @description Workshift id */
+                workshift_id: components["schemas"]["WorkshiftID"];
+                /** @description Equipment id */
+                equipment_id: components["schemas"]["EquipmentID"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApexchartsTimeline"][];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": Record<string, never>;
                 };
             };
         };

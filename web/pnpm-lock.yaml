@@ -11,6 +11,9 @@ importers:
       '@mdi/font':
         specifier: ^7.4.47
         version: 7.4.47
+      apexcharts:
+        specifier: ^8.8.2
+        version: 8.8.2
       openapi-fetch:
         specifier: ^0.17.0
         version: 0.17.0
@@ -23,6 +26,9 @@ importers:
       vue-router:
         specifier: ^5.3.1
         version: 5.5.0(@vue/compiler-sfc@3.5.45)(pinia@4.1.0(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.45(typescript@6.0.3)))(rolldown@1.2.18)(vite@8.3.8(@types/node@24.19.2)(jiti@2.7.0))(vue@3.5.45(typescript@6.0.3))
+      vue3-apexcharts:
+        specifier: ^1.11.3
+        version: 1.11.3(apexcharts@8.8.2)(vue@3.5.45(typescript@6.0.3))
       vuetify:
         specifier: ^4.3.3
         version: 4.3.3(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.45(typescript@6.0.3))
@@ -825,6 +831,13 @@ packages:
   ansis@4.5.0:
     resolution: {integrity: sha512-KwIVkfFfJSSzBmZhDGuTmkhWqTdyB5oNVzzznBJbBZ5bZtHiqSrcugRF0RKJKT4Ss3d7ZrcjnlFVDlQNmtWfWw==}
     engines: {node: '>=14'}
+
+  apex-commons@0.11.0:
+    resolution: {integrity: sha512-r0t1hq4eNzjqRHlf0qG9jiwhd3g/68A9QvgVyjres4oif72NWA1pcvFizpx7gjc/SPECALq0KkL5f12ODIDBPA==}
+
+  apexcharts@8.8.2:
+    resolution: {integrity: sha512-aKrasrtwiMULc9wYW8OyxZwBztfEEkOwHiNDEE39pDsMm79g3C+Zq0CSeXhgeVxPOKCo8E+KR6OqXPgzes1vsg==}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
   argparse@2.0.1:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
@@ -1790,6 +1803,12 @@ packages:
     peerDependencies:
       typescript: '>=5.0.0'
 
+  vue3-apexcharts@1.11.3:
+    resolution: {integrity: sha512-YmXi+cslU5XYg3uNF30R3B2MS7TfHsx1bcemi389GipELpzS4jGCs/iZjeXm8R3Brgrlp/ZqOpwemd39AmGWVQ==}
+    peerDependencies:
+      apexcharts: '>=5.10.0'
+      vue: '>=3.0.0'
+
   vue@3.5.45:
     resolution: {integrity: sha512-3cvsib8m9c0vB24+MDKsgcW4+Da4xaBl9Z/5Tbm2pmSIsRPxcil4cdXjXlVsmJ2g64XJo5h+IRd7rsdGT9pZaw==}
     peerDependencies:
@@ -2589,6 +2608,12 @@ snapshots:
   ansi-styles@7.0.0: {}
 
   ansis@4.5.0: {}
+
+  apex-commons@0.11.0: {}
+
+  apexcharts@8.8.2:
+    dependencies:
+      apex-commons: 0.11.0
 
   argparse@2.0.1: {}
 
@@ -3469,6 +3494,11 @@ snapshots:
       '@volar/typescript': 2.4.30(typescript@6.0.3)
       '@vue/language-core': 3.3.14
       typescript: 6.0.3
+
+  vue3-apexcharts@1.11.3(apexcharts@8.8.2)(vue@3.5.45(typescript@6.0.3)):
+    dependencies:
+      apexcharts: 8.8.2
+      vue: 3.5.45(typescript@6.0.3)
 
   vue@3.5.45(typescript@6.0.3):
     dependencies:

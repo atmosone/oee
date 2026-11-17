@@ -38,6 +38,9 @@
     },
     {
       "name": "queries"
+    },
+    {
+      "name": "apexcharts"
     }
   ],
   "paths": {
@@ -708,6 +711,70 @@
                 }
               }
             }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/intervals/queries/apexcharts_timeline": {
+      "get": {
+        "summary": "ApexchartsEquipmentTimeline",
+        "deprecated": false,
+        "description": "",
+        "operationId": "apexcharts_timeline",
+        "tags": [
+          "queries",
+          "equipment",
+          "workshifts",
+          "intervals",
+          "apexcharts"
+        ],
+        "parameters": [
+          {
+            "name": "workshift_id",
+            "in": "query",
+            "description": "Workshift id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/WorkshiftID"
+            }
+          },
+          {
+            "name": "equipment_id",
+            "in": "query",
+            "description": "Equipment id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EquipmentID"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApexchartsTimeline"
+                  }
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
           }
         },
         "security": []
@@ -1646,6 +1713,52 @@
           "$ref": "#/components/schemas/CurrentInterval"
         },
         "description": "Current intervals list"
+      },
+      "ApexchartsTimeline": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Timeline name",
+            "$ref": "#/components/schemas/IntervalCategory"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApexchartsTimelineBar"
+            },
+            "description": "Timeline data"
+          }
+        },
+        "required": [
+          "name",
+          "data"
+        ]
+      },
+      "ApexchartsTimelineBar": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/IntervalID",
+            "description": "Interval id"
+          },
+          "x": {
+            "description": "Bar category",
+            "$ref": "#/components/schemas/EquipmentName"
+          },
+          "y": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "description": "Bar interval values"
+            },
+            "description": "Bar interval"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "id"
+        ]
       }
     },
     "responses": {},

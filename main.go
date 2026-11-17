@@ -126,6 +126,7 @@ func main() {
 	app.OnQuery(queries.QueryTypeCurrentInterval, postgres.CurrentInterval(db))
 	app.OnQuery(queries.QueryTypeCurrentWorkshift, postgres.CurrentWorkshift(db))
 	app.OnQuery(queries.QueryTypeCurrentIntervalsList, postgres.CurrentIntervalsList(db))
+	app.OnQuery(queries.QueryTypeEquipmentTimeline, postgres.EquipmentTimeline(db))
 	app.Build(postgres.NewWorkshiftsIntervalsProjection(logger, db))
 	app.Build(postgres.NewWorkshiftProductionCounter(logger, db))
 	app.Build(postgres.NewOeeMetricsBuilder(logger, db))
